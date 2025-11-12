@@ -1,0 +1,8 @@
+/*C3*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C4*/SET SCHEMA PUBLIC
+create table Usuario (id varchar(255) not null, Correo varchar(100) not null, fechaRegistro date, Nombre_usuario varchar(100) not null, passwords varchar(100) not null, primary key (id))
+INSERT INTO USUARIO VALUES('ea9c6c65-b645-4859-a9c8-9815d4aa2c3e','sofje9fej@gmail.com','2025-11-12','Stalin','bruh')
+COMMIT
+INSERT INTO USUARIO VALUES('053eaf45-91cc-48f5-8661-b123cf41d721','ejifefefiej@gmail.com','2025-11-12','dassaddsawqewqew','burhx')
+COMMIT
