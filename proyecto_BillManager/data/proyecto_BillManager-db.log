@@ -1,0 +1,9 @@
+/*C3*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C4*/SET SCHEMA PUBLIC
+alter table metas add column id_organizacion bigint not null
+alter table Transacciones add column fechaTransaccion date
+alter table Transacciones add column monto varbinary(255) not null
+alter table Transacciones add column id_usuario varchar(255) not null
+alter table metas add constraint FKrlnn5gpik8k3yv1qf2roin7xu foreign key (id_organizacion) references Organizacion
+alter table Transacciones add constraint FK1jwl6iwsc0b42p59x0yflxvso foreign key (id_usuario) references Usuario
