@@ -7,8 +7,6 @@ import javax.persistence.*;
 import java.util.Collection;
 
 import org.openxava.annotations.*;
-import org.openxava.annotations.chart.Chart;
-import org.openxava.annotations.chart.ChartType;
 
 @Entity
 @Getter @Setter
@@ -42,10 +40,5 @@ public class Cuenta {
     // --- Relación con Transaccion + gráfico ---
     @OneToMany(mappedBy = "cuenta")
     @ListProperties("fecha, descripcion, categoria.nombre, monto")
-    @Chart(
-            type = ChartType.BAR,
-            labelProperties = "fecha",
-            dataProperties = "monto"
-    )
     private Collection<Transaccion> transacciones;
 }
