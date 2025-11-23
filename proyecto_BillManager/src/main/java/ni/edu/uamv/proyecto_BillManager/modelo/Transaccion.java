@@ -1,41 +1,36 @@
 package ni.edu.uamv.proyecto_BillManager.modelo;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 
-import java.text.DecimalFormat;
-import java.util.*;
-import lombok.*;
-
-import javax.persistence.Table;
-
-@Entity @Getter @Setter
-@Tab(properties = "fecha, usuario.nombre, cuenta.nombre, categoria.nombre, monto, descripcion")
+@Entity
+@Getter @Setter
 public class Transaccion {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private enum tipo {ACTIVO, PASIVO, CAPITAL}
 
-    @ManyToOne(optional = false)
-    private Usuario usuario;
+    @Id
+    @Hidden
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
+    private String oid;
 
-    @ManyToOne(optional = false)
-    private Cuenta cuenta;
+    @Column(length = 60, name = "nombre_transaccion", nullable = false)
+    @Required(message = "La transaccion debe tener un nombre")
+    private String nombre;
 
-    @ManyToOne(optional = false)
-    private Categoria categoria;
-
-    private java.time.LocalDate fecha;
-
+    @Column(name = "monto_transaccion", nullable = false)
+    @Required(message = "Es obligatorio especificar un monto")
     private double monto;
 
-    @Column(length = 120)
-    private String descripcion;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Cuenta cuentaDeudora;
 
-    @Column(length = 255)
-    private String adjuntoUrl;
-
-    private java.time.LocalDateTime creadoEn;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Cuenta cuentaAcreedora;
 }

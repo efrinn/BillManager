@@ -4,41 +4,37 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Collection;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 
 @Entity
 @Getter @Setter
-@View(members =
-        "usuario, nombre, saldoInicial, saldoActual;" + // fila 1
-                "metas;" +                                      // fila 2: colección
-                "transacciones"                                // fila 3: colección
-)
-@Tab(properties = "usuario.nombre, nombre, saldoActual")
 public class Cuenta {
 
+    private enum tipo {ACTIVO, PASIVO, CAPITAL}
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @Hidden
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
+    private String oid;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Usuario usuario;
-
-    @Required
-    @Column(length = 40)
+    @Column(name = "nombre_cuenta", length = 60, nullable = false)
+    @Required(message = "La cuenta tiene que tener un nombre")
     private String nombre;
 
-    private double saldoInicial;
-    private double saldoActual;
+    @Column(nullable = false)
+    private tipo tipo;
 
-    // --- Relación con Meta ---
-    @OneToMany(mappedBy = "cuenta")
-    @ListProperties("nombre, montoObjetivo, montoAcumulado, estado")
-    private Collection<Metas> metas;
+    // Los saldos están escondidos a la hora de crear una cuenta
+    // Esto es debido a que los saldos, son derivados de las transacciones
 
-    // --- Relación con Transaccion + gráfico ---
-    @OneToMany(mappedBy = "cuenta")
-    @ListProperties("fecha, descripcion, categoria.nombre, monto")
-    private Collection<Transaccion> transacciones;
+    @Column(name = "saldo_deudor", nullable = false)
+    @Hidden
+    private double saldoDeudor = 0;
+
+    @Column(name = "saldo_acreedor", nullable = false)
+    @Hidden
+    private double saldoAcreedor = 0;
 }
