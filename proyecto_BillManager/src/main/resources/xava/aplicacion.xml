@@ -9,43 +9,6 @@
         <controlador nombre="Typical"/>
     </modulo-defecto>
 
-    <!-- Módulo explícito para cada entidad importante -->
-
-    <modulo nombre="Usuarios">
-        <modelo nombre="Usuario"/>
-        <controlador nombre="Typical"/>
-    </modulo>
-
-    <modulo nombre="Organizaciones">
-        <modelo nombre="Organizacion"/>
-        <controlador nombre="Typical"/>
-    </modulo>
-
-    <modulo nombre="Cuentas">
-        <modelo nombre="Cuenta"/>
-        <controlador nombre="Typical"/>
-    </modulo>
-
-    <modulo nombre="Categorias">
-        <modelo nombre="Categoria"/>
-        <controlador nombre="Typical"/>
-    </modulo>
-
-    <modulo nombre="Metas">
-        <modelo nombre="Meta"/>
-        <controlador nombre="Typical"/>
-    </modulo>
-
-    <modulo nombre="Transacciones">
-        <modelo nombre="Transaccion"/>
-        <controlador nombre="Typical"/>
-    </modulo>
-
-    <modulo nombre="Reportes">
-        <modelo nombre="Reporte"/>
-        <controlador nombre="Typical"/>
-    </modulo>
-
     <!-- Aquí podrías añadir luego un Dashboard, por ejemplo:
     <modulo nombre="DashboardFinanzas">
         <modelo nombre="FinanzasDashboard"/>
