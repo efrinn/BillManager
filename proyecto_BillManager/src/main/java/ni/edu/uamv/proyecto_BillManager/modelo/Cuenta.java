@@ -12,7 +12,7 @@ import org.openxava.annotations.*;
 @Getter @Setter
 public class Cuenta {
 
-    private enum tipo {ACTIVO, PASIVO, PATRIMONIO}
+    private enum tipo {ACTIVO, PASIVO, CAPITAL}
 
     @Id
     @Hidden
@@ -23,4 +23,18 @@ public class Cuenta {
     @Column(name = "nombre_cuenta", length = 60, nullable = false)
     @Required(message = "La cuenta tiene que tener un nombre")
     private String nombre;
+
+    @Column(nullable = false)
+    private tipo tipo;
+
+    // Los saldos están escondidos a la hora de crear una cuenta
+    // Esto es debido a que los saldos, son derivados de las transacciones
+
+    @Column(name = "saldo_deudor", nullable = false)
+    @Hidden
+    private double saldoDeudor = 0;
+
+    @Column(name = "saldo_acreedor", nullable = false)
+    @Hidden
+    private double saldoAcreedor = 0;
 }
