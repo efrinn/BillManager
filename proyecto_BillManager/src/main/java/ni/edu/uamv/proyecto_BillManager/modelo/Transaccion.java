@@ -8,11 +8,11 @@ import javax.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter @Setter
 public class Transaccion {
-
-    private enum tipo {ACTIVO, PASIVO, CAPITAL}
 
     @Id
     @Hidden
@@ -20,17 +20,23 @@ public class Transaccion {
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String oid;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Persona usuarioAutor;
+
     @Column(length = 60, name = "nombre_transaccion", nullable = false)
-    @Required(message = "La transaccion debe tener un nombre")
+    @Required(message = "La transacción debe tener un nombre")
     private String nombre;
 
     @Column(name = "monto_transaccion", nullable = false)
     @Required(message = "Es obligatorio especificar un monto")
     private double monto;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Cuenta cuentaDeudora;
+    @Column(name = "fecha_transaccion", nullable = false)
+    @Required(message = "Es obligatorio especificar la fecha en que se realizó la transacción")
+    private LocalDate fechaTransaccion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Cuenta cuentaAcreedora;
+    @Column(length = 100, name = "desc_transaccion", nullable = false)
+    private String descripcion;
 }
+
