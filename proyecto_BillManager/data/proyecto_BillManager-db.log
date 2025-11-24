@@ -1,24 +1,14 @@
 /*C4*/SET SCHEMA PUBLIC
 DISCONNECT
 /*C5*/SET SCHEMA PUBLIC
-create table Periodo (oid varchar(255) not null, fecha date not null, primary key (oid))
-alter table Transaccion add column monto_transaccion double not null
-alter table Transaccion add column cuentaAcreedora_oid varchar(255)
-alter table Transaccion add column cuentaDeudora_oid varchar(255)
-alter table Transaccion add constraint FKmnay0185olamhim5m38ao206n foreign key (cuentaAcreedora_oid) references Cuenta
-alter table Transaccion add constraint FK4iy8q1acijcvduv7vvt2a76uq foreign key (cuentaDeudora_oid) references Cuenta
-INSERT INTO PERIODO VALUES('601db616-ae74-4854-b304-76ec2c60086f','2025-11-23')
+create table Meta (oid varchar(255) not null, estado integer not null, fecha_limite date not null, monto_acumulado double not null, monto_objetivo double not null, nombre_cuenta varchar(60) not null, usuario_id varchar(255) not null, primary key (oid))
+create table Persona (oid varchar(255) not null, email_usuario varchar(60) not null, fecha_registro date not null, nombre_usuario varchar(60) not null, pass varchar(60) not null, primary key (oid))
+alter table Transaccion add column desc_transaccion varchar(100) not null
+alter table Transaccion add column fecha_transaccion date not null
+alter table Transaccion add column usuario_id varchar(255) not null
+alter table Meta add constraint FKq58wc5h026ycrg3sy3jl6e49i foreign key (usuario_id) references Persona
+alter table Transaccion add constraint FK6ov72itr097yj2t2ypd6d2l84 foreign key (usuario_id) references Persona
+INSERT INTO PERSONA VALUES('a9a9e938-d556-420c-af81-a99944b35e1f','dasdasdas@gmail.com','2025-11-23','sadweqewq','dsadqweqw')
 COMMIT
-INSERT INTO CUENTA VALUES('97bcae7a-c503-452d-8c6e-7d92ba27b9bc','Ventas',0.0E0,0.0E0,0)
-COMMIT
-INSERT INTO CUENTA VALUES('d939194d-9ab3-4c63-80d7-65dbf4920c90','Compras',0.0E0,0.0E0,1)
-COMMIT
-INSERT INTO TRANSACCION VALUES('a8e66ad2-a0a6-4a89-a811-d19a6547c482','Proveedores',NULL,5000.0E0,'d939194d-9ab3-4c63-80d7-65dbf4920c90','97bcae7a-c503-452d-8c6e-7d92ba27b9bc')
-COMMIT
-DELETE FROM TRANSACCION WHERE OID='a8e66ad2-a0a6-4a89-a811-d19a6547c482'
-COMMIT
-DELETE FROM CUENTA WHERE OID='97bcae7a-c503-452d-8c6e-7d92ba27b9bc'
-DELETE FROM CUENTA WHERE OID='d939194d-9ab3-4c63-80d7-65dbf4920c90'
-COMMIT
-DELETE FROM PERIODO WHERE OID='601db616-ae74-4854-b304-76ec2c60086f'
+DELETE FROM PERSONA WHERE OID='a9a9e938-d556-420c-af81-a99944b35e1f'
 COMMIT
