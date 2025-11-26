@@ -2,37 +2,55 @@ package ni.edu.uamv.proyecto_BillManager.modelo;
 
 import lombok.Getter;
 import lombok.Setter;
-
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import javax.persistence.*;
-
+import javax.validation.constraints.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
-
-import java.time.LocalDate;
+import org.openxava.calculators.*;
 
 @Entity
 @Getter @Setter
+@Tab(
+        properties="fechaTransaccion, nombre, monto",
+        defaultOrder="fechaTransaccion desc"
+)
+@View(members=
+        "Principal { fechaTransaccion; nombre; monto; presupuesto } " +
+                "Detalles { descripcion; comprobante }"
+)
 public class Transaccion {
 
-    @Id
-    @Hidden
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
+    @Id @Hidden
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy="uuid2")
     private String oid;
 
-    @Column(length = 60, name = "nombre_transaccion", nullable = false)
-    @Required(message = "La transacción debe tener un nombre")
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "id_presupuesto", nullable = false)
+    private Presupuesto presupuesto;
+
+    @Required
+    @Column(length=60, nullable=false)
     private String nombre;
 
-    @Column(name = "monto_transaccion", nullable = false)
-    @Required(message = "Es obligatorio especificar un monto")
-    private double monto;
+    @Column(length = 250)
+    @Stereotype("MEMO")
+    private String descripcion;
 
-    @Column(name = "fecha_transaccion", nullable = false)
-    @Required(message = "Es obligatorio especificar la fecha en que se realizó la transacción")
+    @Required
+    @Stereotype("MONEY")
+    @Min(0)
+    private BigDecimal monto;
+
+    @Required
+    @DefaultValueCalculator(CurrentDateCalculator.class)
     private LocalDate fechaTransaccion;
 
-    @Column(length = 100, name = "desc_transaccion", nullable = false)
-    private String descripcion;
+    // MEJORA: FILE permite subir PDF, Imágenes, Excel, etc.
+    // Guarda un ID (String), no el binario pesado en la tabla principal.
+    @Column(length=32)
+    @Stereotype("FILE")
+    private String comprobante;
 }
-
