@@ -6,16 +6,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
-import org.openxava.calculators.CurrentUserCalculator;
-import ni.edu.uamv.proyecto_BillManager.filtros.FiltroUsuario;
 
 @Entity
 @Getter @Setter
 @Tab(
-        filter=FiltroUsuario.class,
-        baseCondition="${usuario} = ?",
         properties="nombre, montoObjetivo, montoAcumulado, progreso, fechaLimite, estado",
         defaultOrder="fechaLimite asc"
 )
@@ -31,13 +29,6 @@ public class Meta {
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy="uuid2")
     private String oid;
-
-    // --- SEGURIDAD ---
-    @Column(length=50)
-    @Hidden
-    @DefaultValueCalculator(CurrentUserCalculator.class)
-    private String usuario;
-    // -----------------
 
     @Lob
     @Basic(fetch=FetchType.LAZY)
@@ -56,7 +47,8 @@ public class Meta {
     @Required
     @Column(nullable=false)
     @Stereotype("MONEY")
-    private BigDecimal montoAcumulado = BigDecimal.ZERO;
+    @Min(0)
+    private BigDecimal montoAcumulado;
 
     @Stereotype("PROGRESS_BAR")
     @Depends("montoAcumulado, montoObjetivo")
@@ -76,18 +68,4 @@ public class Meta {
     @Required
     @Enumerated(EnumType.STRING)
     private Estado estado;
-
-    @PrePersist @PreUpdate
-    private void actualizarEstado() {
-        if (usuario == null) usuario = org.openxava.util.Users.getCurrent();
-
-        // Lógica automática de estado (opcional)
-        if (montoAcumulado.compareTo(montoObjetivo) >= 0) {
-            this.estado = Estado.CUMPLIDA;
-        } else if (LocalDate.now().isAfter(fechaLimite)) {
-            this.estado = Estado.VENCIDA;
-        } else {
-            this.estado = Estado.PROGRESANDO;
-        }
-    }
 }
