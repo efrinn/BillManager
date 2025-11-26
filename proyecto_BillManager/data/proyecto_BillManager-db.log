@@ -1,14 +1,5 @@
 /*C4*/SET SCHEMA PUBLIC
 DISCONNECT
 /*C5*/SET SCHEMA PUBLIC
-create table Meta (oid varchar(255) not null, estado integer not null, fecha_limite date not null, monto_acumulado double not null, monto_objetivo double not null, nombre_cuenta varchar(60) not null, usuario_id varchar(255) not null, primary key (oid))
-create table Persona (oid varchar(255) not null, email_usuario varchar(60) not null, fecha_registro date not null, nombre_usuario varchar(60) not null, pass varchar(60) not null, primary key (oid))
-alter table Transaccion add column desc_transaccion varchar(100) not null
-alter table Transaccion add column fecha_transaccion date not null
-alter table Transaccion add column usuario_id varchar(255) not null
-alter table Meta add constraint FKq58wc5h026ycrg3sy3jl6e49i foreign key (usuario_id) references Persona
-alter table Transaccion add constraint FK6ov72itr097yj2t2ypd6d2l84 foreign key (usuario_id) references Persona
-INSERT INTO PERSONA VALUES('a9a9e938-d556-420c-af81-a99944b35e1f','dasdasdas@gmail.com','2025-11-23','sadweqewq','dsadqweqw')
-COMMIT
-DELETE FROM PERSONA WHERE OID='a9a9e938-d556-420c-af81-a99944b35e1f'
+INSERT INTO META VALUES('4099dda5-59ee-4e40-8736-7968f189453d',0,'2025-11-26',1111.0E0,1212213.0E0,'sadasddas')
 COMMIT

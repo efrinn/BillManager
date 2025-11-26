@@ -22,10 +22,6 @@ public class Meta {
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String oid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Persona usuarioResponsable;
-
     @Column(name = "nombre_cuenta", length = 60, nullable = false)
     @Required(message = "La cuenta tiene que tener un nombre")
     private String nombre;

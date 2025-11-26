@@ -20,10 +20,6 @@ public class Transaccion {
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String oid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Persona usuarioAutor;
-
     @Column(length = 60, name = "nombre_transaccion", nullable = false)
     @Required(message = "La transacción debe tener un nombre")
     private String nombre;
