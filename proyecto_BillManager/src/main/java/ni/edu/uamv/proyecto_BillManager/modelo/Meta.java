@@ -37,18 +37,18 @@ public class Meta {
     private byte[] foto;
 
     @Required
-    @Column(length=60, nullable=false)
+    @Column(name = "nombre_meta", length=60, nullable=false)
     private String nombre;
 
     @Required
-    @Column(nullable=false)
+    @Column(name = "montoObjetivo_meta", nullable=false)
     @Stereotype("MONEY")
+    @Min(value = 0, message = "No se puede poner un monto negativo")
     private BigDecimal montoObjetivo;
 
-    @Required
-    @Column(nullable=false)
+    @Column(name = "montoAcumulado_meta", nullable = false)
     @Stereotype("MONEY")
-    @Min(0)
+    @Min(value = 0, message = "No se puede poner un monto negativo")
     private BigDecimal montoAcumulado;
 
     @Stereotype("PROGRESS_BAR")
@@ -64,6 +64,7 @@ public class Meta {
     }
 
     @Required
+    @Column(name = "fechaLimite_meta", nullable = false)
     @FutureOrPresent
     private LocalDate fechaLimite;
 

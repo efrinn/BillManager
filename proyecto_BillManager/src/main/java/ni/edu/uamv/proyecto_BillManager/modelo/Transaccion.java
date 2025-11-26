@@ -32,25 +32,27 @@ public class Transaccion {
     private Presupuesto presupuesto;
 
     @Required
-    @Column(length=60, nullable=false)
+    @Column(name = "nombre_transaccion", length=60, nullable=false)
     private String nombre;
 
-    @Column(length = 250)
+    @Column(name = "desc_transaccion", length = 250)
     @Stereotype("MEMO")
     private String descripcion;
 
+    @Column(name = "monto_transaccion", nullable = false)
     @Required
     @Stereotype("MONEY")
     @Min(0)
     private BigDecimal monto;
 
+    @Column(name = "fecha_transaccion", nullable = false)
     @Required
     @DefaultValueCalculator(CurrentDateCalculator.class)
     private LocalDate fechaTransaccion;
 
     // MEJORA: FILE permite subir PDF, Imágenes, Excel, etc.
     // Guarda un ID (String), no el binario pesado en la tabla principal.
-    @Column(length=32)
+    @Column(name = "comprobante_transaccion", length=32)
     @Stereotype("FILE")
     private String comprobante;
 }

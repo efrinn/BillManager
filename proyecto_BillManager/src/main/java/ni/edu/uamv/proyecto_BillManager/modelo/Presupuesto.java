@@ -5,6 +5,9 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.Month;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.ws.rs.DefaultValue;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 import org.openxava.calculators.*;
@@ -23,21 +26,22 @@ public class Presupuesto {
     private String oid;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 15)
+    @Column(name = "periodo_presupuesto", length = 15)
     @Required
     private Month periodo;
 
-    @Column(length = 4)
+    @Column(name = "year_presupuesto", length = 4)
     @Required
     @DefaultValueCalculator(CurrentYearCalculator.class)
     private int anio;
 
-    @Column(name = "monto_limite")
+    @Column(name = "monto_limite", nullable = false)
     @Stereotype("MONEY")
     @Required(message = "Define cuánto quieres gastar máximo")
+    @Min(value = 0, message = "No se puede poner un monto negativo")
     private BigDecimal montoLimite;
 
-    @Column(length = 100)
+    @Column(name = "notas_presupuesto", length = 100)
     @Stereotype("MEMO")
     private String notas;
 }
