@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import javax.persistence.*;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Min;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -63,6 +64,7 @@ public class Meta {
     }
 
     @Required
+    @FutureOrPresent
     private LocalDate fechaLimite;
 
     @Required

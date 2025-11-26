@@ -17,7 +17,7 @@ import org.openxava.calculators.*;
         defaultOrder="fechaTransaccion desc"
 )
 @View(members=
-        "Principal { fechaTransaccion; nombre; monto } " +
+        "Principal { fechaTransaccion; nombre; monto; presupuesto } " +
                 "Detalles { descripcion; comprobante }"
 )
 public class Transaccion {
@@ -26,6 +26,10 @@ public class Transaccion {
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy="uuid2")
     private String oid;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "id_presupuesto", nullable = false)
+    private Presupuesto presupuesto;
 
     @Required
     @Column(length=60, nullable=false)
