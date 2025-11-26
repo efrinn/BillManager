@@ -14,16 +14,17 @@ import org.openxava.calculators.*;
 
 @Entity
 @Getter @Setter
-@Tab(
-        properties="periodo, anio, montoLimite"
-)
-@View(members="periodo, anio; montoLimite, notas")
+@View(members="nombre, periodo, anio; montoLimite, notas")
 public class Presupuesto {
 
     @Id @Hidden
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String oid;
+
+    @Column(name = "nombre_presupuesto", length = 80, nullable = false)
+    @Required(message = "El presupuesto debe tener nombre para entender su contexto")
+    private String nombre;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "periodo_presupuesto", length = 15)
