@@ -1,5 +1,22 @@
 /*C4*/SET SCHEMA PUBLIC
 DISCONNECT
 /*C5*/SET SCHEMA PUBLIC
-INSERT INTO PRESUPUESTO VALUES('3e45037f-4475-45df-9c6c-84391ff46b06',2025,15000.00,'Mi dinero','NOVEMBER')
+drop table if exists IMAGES CASCADE 
+drop table if exists Meta CASCADE 
+drop table if exists OXDISCUSSIONCOMMENTS CASCADE 
+drop table if exists Presupuesto CASCADE 
+drop table if exists Transaccion CASCADE 
+create table IMAGES (ID varchar(32) not null, GALLERY varchar(32), image varbinary(16777216), primary key (ID))
+create table Meta (oid varchar(255) not null, estado varchar(255), fechaLimite date, foto blob(255), montoAcumulado numeric(19,2) not null check (montoAcumulado>=0), montoObjetivo numeric(19,2) not null, nombre varchar(60) not null, primary key (oid))
+create table OXDISCUSSIONCOMMENTS (id varchar(32) not null, comment clob(16777216), discussionId varchar(32), time timestamp, userName varchar(30), primary key (id))
+create table Presupuesto (oid varchar(255) not null, anio integer, monto_limite numeric(19,2), notas varchar(100), periodo varchar(15), primary key (oid))
+create table Transaccion (oid varchar(255) not null, comprobante varchar(32), descripcion varchar(250), fechaTransaccion date, monto numeric(19,2) check (monto>=0), nombre varchar(60) not null, primary key (oid))
+create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
+INSERT INTO TRANSACCION VALUES('d9966f30-1011-4256-83f3-ce1cb5a09f15',NULL,'sadadsda','2025-11-26',0.01,'123assda')
+COMMIT
+DELETE FROM TRANSACCION WHERE OID='d9966f30-1011-4256-83f3-ce1cb5a09f15'
+COMMIT
+INSERT INTO TRANSACCION VALUES('102d349c-41ee-4536-a7b6-5ac15161063b',NULL,'dsadads','2025-11-27',1.00,'saddsadas')
+COMMIT
+DELETE FROM TRANSACCION WHERE OID='102d349c-41ee-4536-a7b6-5ac15161063b'
 COMMIT
