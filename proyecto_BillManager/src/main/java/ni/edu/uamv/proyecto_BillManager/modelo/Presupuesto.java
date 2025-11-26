@@ -27,11 +27,11 @@ public class Presupuesto {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "periodo_presupuesto", length = 15)
-    @Required
+    @Required(message = "El presupuesto debe tener un periodo")
     private Month periodo;
 
     @Column(name = "year_presupuesto", length = 4)
-    @Required
+    @Required(message = "El presupuesto debe contener el año en que se obtuvó")
     @DefaultValueCalculator(CurrentYearCalculator.class)
     private int anio;
 

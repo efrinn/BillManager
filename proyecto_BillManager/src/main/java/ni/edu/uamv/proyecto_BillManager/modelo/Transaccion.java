@@ -31,7 +31,7 @@ public class Transaccion {
     @JoinColumn(name = "id_presupuesto", nullable = false)
     private Presupuesto presupuesto;
 
-    @Required
+    @Required(message = "La transaccion debe llevar nombre")
     @Column(name = "nombre_transaccion", length=60, nullable=false)
     private String nombre;
 
@@ -40,13 +40,13 @@ public class Transaccion {
     private String descripcion;
 
     @Column(name = "monto_transaccion", nullable = false)
-    @Required
+    @Required(message = "La transaccion debe tener un monto")
     @Stereotype("MONEY")
-    @Min(0)
+    @Min(value = 0, message = "EL monto no puede ser negativo")
     private BigDecimal monto;
 
     @Column(name = "fecha_transaccion", nullable = false)
-    @Required
+    @Required(message = "Es obligatorio que la transaccion tenga la fecha en que se realizó")
     @DefaultValueCalculator(CurrentDateCalculator.class)
     private LocalDate fechaTransaccion;
 

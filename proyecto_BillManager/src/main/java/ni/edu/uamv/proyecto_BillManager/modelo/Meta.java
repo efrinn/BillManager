@@ -36,11 +36,11 @@ public class Meta {
     @Stereotype("PHOTO")
     private byte[] foto;
 
-    @Required
+    @Required(message = "El nombre de la meta debe tener valor")
     @Column(name = "nombre_meta", length=60, nullable=false)
     private String nombre;
 
-    @Required
+    @Required(message = "La meta tiene que tener un monto objetivo")
     @Column(name = "montoObjetivo_meta", nullable=false)
     @Stereotype("MONEY")
     @Min(value = 0, message = "No se puede poner un monto negativo")
@@ -63,12 +63,12 @@ public class Meta {
         return progreso.min(new BigDecimal("100"));
     }
 
-    @Required
+    @Required(message = "Es obligatorio que la meta tenga una fecha límite")
     @Column(name = "fechaLimite_meta", nullable = false)
     @FutureOrPresent
     private LocalDate fechaLimite;
 
-    @Required
+    @Required(message = "La meta debe tener un estado en específico")
     @Enumerated(EnumType.STRING)
     private Estado estado;
 }
