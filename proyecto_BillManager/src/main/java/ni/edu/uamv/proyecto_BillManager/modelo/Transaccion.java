@@ -5,26 +5,21 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.*;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
-import org.openxava.calculators.CurrentDateCalculator;
-import ni.edu.uamv.proyecto_BillManager.filtros.FiltroUsuario;
+import org.openxava.calculators.*;
 
 @Entity
 @Getter @Setter
 @Tab(
-        filter=FiltroUsuario.class,
-        baseCondition="${usuarioAutor.nombre} = ?",
-        properties="fechaTransaccion, nombre, categoria.nombre, negocio.nombre, monto",
+        properties="fechaTransaccion, nombre, monto",
         defaultOrder="fechaTransaccion desc"
 )
 @View(members=
-        "Principal { fechaTransaccion; nombre; monto } " +
-                "Clasificacion { categoria; negocio } " +
-                "Detalles { usuarioAutor; descripcion; comprobante }"
+        "Principal { fechaTransaccion; nombre; monto; presupuesto } " +
+                "Detalles { descripcion; comprobante }"
 )
-@View(name="Simple", members="nombre, categoria, monto, fechaTransaccion")
 public class Transaccion {
 
     @Id @Hidden
@@ -33,28 +28,16 @@ public class Transaccion {
     private String oid;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="usuario_id", nullable=false)
-    @DescriptionsList(descriptionProperties="nombre")
-    @DefaultValueCalculator(org.openxava.calculators.CurrentUserCalculator.class)
-    @Required
-    private Persona usuarioAutor;
+    @JoinColumn(name = "id_presupuesto", nullable = false)
+    private Presupuesto presupuesto;
 
     @Required
     @Column(length=60, nullable=false)
     private String nombre;
 
+    @Column(length = 250)
     @Stereotype("MEMO")
     private String descripcion;
-
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="categoria_id")
-    @DescriptionsList(descriptionProperties="icono, nombre")
-    private Categoria categoria;
-
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="negocio_id")
-    @DescriptionsList(descriptionProperties="nombre")
-    private Negocio negocio;
 
     @Required
     @Stereotype("MONEY")
@@ -65,8 +48,9 @@ public class Transaccion {
     @DefaultValueCalculator(CurrentDateCalculator.class)
     private LocalDate fechaTransaccion;
 
-    @Lob
-    @Basic(fetch=FetchType.LAZY)
-    @Stereotype("PHOTO")
-    private byte[] comprobante;
+    // MEJORA: FILE permite subir PDF, Imágenes, Excel, etc.
+    // Guarda un ID (String), no el binario pesado en la tabla principal.
+    @Column(length=32)
+    @Stereotype("FILE")
+    private String comprobante;
 }

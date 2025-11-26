@@ -6,17 +6,20 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import javax.persistence.*;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.Min;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 
 @Entity
 @Getter @Setter
 @Tab(
-        properties="nombre, usuarioResponsable.nombre, montoObjetivo, montoAcumulado, progreso, fechaLimite, estado",
+        properties="nombre, montoObjetivo, montoAcumulado, progreso, fechaLimite, estado",
         defaultOrder="fechaLimite asc"
 )
 @View(members=
-        "Datos { foto; usuarioResponsable; nombre; montoObjetivo; montoAcumulado; progreso } " +
+        "Datos { foto; nombre; montoObjetivo; montoAcumulado; progreso } " +
                 "Plazos { fechaLimite; estado }"
 )
 public class Meta {
@@ -33,11 +36,6 @@ public class Meta {
     @Stereotype("PHOTO")
     private byte[] foto;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="usuario_id", nullable=false)
-    @DescriptionsList(descriptionProperties="nombre")
-    private Persona usuarioResponsable;
-
     @Required
     @Column(length=60, nullable=false)
     private String nombre;
@@ -50,17 +48,23 @@ public class Meta {
     @Required
     @Column(nullable=false)
     @Stereotype("MONEY")
-    private BigDecimal montoAcumulado = BigDecimal.ZERO;
+    @Min(0)
+    private BigDecimal montoAcumulado;
 
     @Stereotype("PROGRESS_BAR")
     @Depends("montoAcumulado, montoObjetivo")
     public BigDecimal getProgreso() {
-        if (montoObjetivo == null || montoObjetivo.equals(BigDecimal.ZERO)) return BigDecimal.ZERO;
-        return montoAcumulado.divide(montoObjetivo, 2, RoundingMode.HALF_UP)
+        if (montoObjetivo == null || montoObjetivo.compareTo(BigDecimal.ZERO) == 0) return BigDecimal.ZERO;
+
+        BigDecimal progreso = montoAcumulado.divide(montoObjetivo, 2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal("100"));
+
+        // Evitamos que la barra se salga de 100% visualmente
+        return progreso.min(new BigDecimal("100"));
     }
 
     @Required
+    @FutureOrPresent
     private LocalDate fechaLimite;
 
     @Required
