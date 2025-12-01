@@ -12,13 +12,11 @@
     <Objeto nombre="proyecto_BillManager_anyoActivo" clase="java.lang.Integer" valor="2015" 
             ambito="global"/>
     -->
-    
-    <!-- Controlador:
-    <controlador nombre="Profesor">
+
+    <controlador nombre="Presupuesto">
         <hereda-de controlador="Typical"/>
-        <accion nombre="new" icono="library-plus" atajo-de-teclado="Control N" 
-                clase="acciones.CrearProfesor"/>        
+        <accion nombre="imprimirReporte" icono="printer" modo="list"
+                clase="ni.edu.uamv.proyecto_BillManager.acciones.ImprimirReportePresupuesto"/>
     </controlador>
-    -->
     
 </controladores>
