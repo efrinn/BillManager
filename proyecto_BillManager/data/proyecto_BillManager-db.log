@@ -14,11 +14,9 @@ create table Transaccion (oid varchar(255) not null, comprobante_transaccion var
 create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
 alter table Transaccion add constraint FKnnpjhlnfhavs6w3s1srqyak2c foreign key (id_meta) references Meta
 alter table Transaccion add constraint FKsoevmwsgl2wpul5erh87higg6 foreign key (id_presupuesto) references Presupuesto
-INSERT INTO PRESUPUESTO VALUES('daf7f13a-2e1a-45d7-a58e-c0b8378df558',2025,1111111.00,'dsdadsa','d','JANUARY')
+INSERT INTO META VALUES('2c04301e-1334-4f56-b072-9e58a741fd36','PROGRESANDO','2025-12-24',NULL,454848.00,'fufo')
 COMMIT
-INSERT INTO META VALUES('8409f4cf-e7bb-46ba-b95c-b846ecccc8bb','PROGRESANDO','2025-12-30',NULL,12333333.00,'nice')
+INSERT INTO PRESUPUESTO VALUES('473bc2a5-c159-474c-bbdd-34aae8c510c7',2025,111201.00,'bruh','','JANUARY')
 COMMIT
-INSERT INTO TRANSACCION VALUES('78fc5b95-c5e4-40b7-8e14-76b85d275a52',NULL,NULL,'2025-12-02',555.00,'ooooo',NULL,'daf7f13a-2e1a-45d7-a58e-c0b8378df558')
-COMMIT
-INSERT INTO TRANSACCION VALUES('453bb701-f65a-49a1-a0a0-8da892e23770',NULL,NULL,'2025-12-10',1000.00,'dssws','8409f4cf-e7bb-46ba-b95c-b846ecccc8bb',NULL)
+INSERT INTO TRANSACCION VALUES('3510ed4e-0327-40e8-ba50-9ea11fcd8c8f',NULL,NULL,'2025-12-01',5555.00,'clase normal','2c04301e-1334-4f56-b072-9e58a741fd36',NULL)
 COMMIT

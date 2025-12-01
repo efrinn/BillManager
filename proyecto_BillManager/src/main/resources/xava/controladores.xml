@@ -13,10 +13,10 @@
             ambito="global"/>
     -->
 
-    <controlador nombre="Presupuesto">
+    <controlador nombre="Transaccion">
         <hereda-de controlador="Typical"/>
-        <accion nombre="imprimirReporte" icono="printer" modo="list"
-                clase="ni.edu.uamv.proyecto_BillManager.acciones.ImprimirReportePresupuesto"/>
+        <accion nombre="imprimirReporte" icono="printer" modo="detail"
+                clase="ni.edu.uamv.proyecto_BillManager.acciones.ImprimirTransaccionAction"/>
     </controlador>
     
 </controladores>
