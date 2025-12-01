@@ -5,7 +5,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.Collection; // Importante
+import java.util.Collection;
 import javax.persistence.*;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Min;
@@ -14,11 +14,14 @@ import org.openxava.annotations.*;
 
 @Entity
 @Getter @Setter
-// Actualizamos la vista para incluir la lista de transacciones (ahorros)
+@Tab(
+        properties="nombre, montoObjetivo, montoAcumulado, progreso, fechaLimite, estado",
+        defaultOrder="fechaLimite asc"
+)
 @View(members=
         "Datos { foto; nombre; montoObjetivo; montoAcumulado; progreso } " +
                 "Plazos { fechaLimite; estado } " +
-                "Aportes { transacciones }"
+                "Ahorros { transacciones }" // Mostramos el detalle de los ingresos
 )
 public class Meta {
 
@@ -38,18 +41,19 @@ public class Meta {
     @Column(name = "nombre_meta", length=60, nullable=false)
     private String nombre;
 
-    @Required
+    @Required(message = "La meta tiene que tener un monto objetivo")
     @Column(name = "montoObjetivo_meta", nullable=false)
     @Stereotype("MONEY")
-    @Min(value = 0)
+    @Min(value = 0, message = "No se puede poner un monto negativo")
     private BigDecimal montoObjetivo;
 
-    // RELACIÓN: Transacciones que aportan a esta meta
+    // --- NUEVO: Lista de transacciones (ahorros) ---
     @OneToMany(mappedBy="meta")
     @ListProperties("fechaTransaccion, nombre, monto")
+    @ReadOnly
     private Collection<Transaccion> transacciones;
 
-    // CÁLCULO: Eliminamos el campo persistente y lo hacemos calculado
+    // --- MODIFICADO: Ya no es @Column, es calculado ---
     @Stereotype("MONEY")
     @Depends("transacciones.monto")
     public BigDecimal getMontoAcumulado() {
@@ -64,9 +68,9 @@ public class Meta {
         return total;
     }
 
-    // BARRA DE PROGRESO (Estilo estándar azul)
+    // --- BARRA AZUL ESTÁNDAR (Se llena con los ahorros) ---
     @Stereotype("PROGRESS_BAR")
-    @Depends("montoObjetivo, transacciones.monto") // Depende ahora de las transacciones
+    @Depends("montoObjetivo, transacciones.monto") // Depende de los ahorros
     public BigDecimal getProgreso() {
         BigDecimal acumulado = getMontoAcumulado();
 
@@ -75,15 +79,16 @@ public class Meta {
         BigDecimal progreso = acumulado.divide(montoObjetivo, 2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal("100"));
 
+        // Limitamos a 100% visualmente
         return progreso.min(new BigDecimal("100"));
     }
 
-    @Required
+    @Required(message = "Es obligatorio que la meta tenga una fecha límite")
     @Column(name = "fechaLimite_meta", nullable = false)
     @FutureOrPresent
     private LocalDate fechaLimite;
 
-    @Required
+    @Required(message = "La meta debe tener un estado en específico")
     @Enumerated(EnumType.STRING)
     private Estado estado;
 }

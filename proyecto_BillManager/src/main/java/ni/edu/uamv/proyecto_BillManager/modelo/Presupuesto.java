@@ -5,7 +5,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Month;
-import java.util.Collection; // Importante
+import java.util.Collection;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import org.hibernate.annotations.GenericGenerator;
@@ -14,8 +14,7 @@ import org.openxava.calculators.*;
 
 @Entity
 @Getter @Setter
-// Agregamos 'barraProgreso' y 'gastoTotal' a la vista
-@View(members="nombre, periodo, anio; montoLimite, gastoTotal; barraProgreso; notas; transacciones")
+@View(members="nombre, periodo, anio; montoLimite, gastoTotal; estadoPresupuesto; notas; transacciones")
 public class Presupuesto {
 
     @Id @Hidden
@@ -24,39 +23,43 @@ public class Presupuesto {
     private String oid;
 
     @Column(name = "nombre_presupuesto", length = 80, nullable = false)
-    @Required(message = "El presupuesto debe tener nombre")
+    @Required(message = "El presupuesto debe tener nombre para entender su contexto")
     private String nombre;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "periodo_presupuesto", length = 15)
-    @Required
+    @Required(message = "El presupuesto debe tener un periodo")
     private Month periodo;
 
     @Column(name = "year_presupuesto", length = 4)
+    @Required(message = "El presupuesto debe contener el año en que se obtuvo")
     @DefaultValueCalculator(CurrentYearCalculator.class)
     private int anio;
 
     @Column(name = "monto_limite", nullable = false)
     @Stereotype("MONEY")
-    @Min(value = 0)
+    @Required(message = "Define cuánto quieres gastar máximo")
+    @Min(value = 0, message = "No se puede poner un monto negativo")
     private BigDecimal montoLimite;
 
     @Column(name = "notas_presupuesto", length = 100)
     @Stereotype("MEMO")
     private String notas;
 
-    // RELACIÓN: Para saber qué transacciones pertenecen a este presupuesto
+    // --- NUEVO: Lista de gastos asociados ---
     @OneToMany(mappedBy="presupuesto")
-    @ListProperties("fechaTransaccion, nombre, monto") // Mostramos lista simple
+    @ListProperties("fechaTransaccion, nombre, monto")
+    @ReadOnly // Solo lectura aquí, se agregan desde el módulo de Transacciones
     private Collection<Transaccion> transacciones;
 
-    // CÁLCULO: Suma automática de los gastos
+    // --- NUEVO: Cálculo del total gastado ---
     @Stereotype("MONEY")
-    @Depends("transacciones.monto") // Recalcular si cambian los montos
+    @Depends("transacciones.monto")
     public BigDecimal getGastoTotal() {
         BigDecimal total = BigDecimal.ZERO;
         if (transacciones != null) {
             for (Transaccion t : transacciones) {
+                // Solo sumamos si la transacción tiene monto
                 if (t.getMonto() != null) {
                     total = total.add(t.getMonto());
                 }
@@ -65,32 +68,33 @@ public class Presupuesto {
         return total;
     }
 
-    // SEMÁFORO: Barra de colores (Verde -> Amarillo -> Rojo)
-    @Stereotype("HTML_TEXT") // Usamos HTML para dibujar la barra con colores
+    // --- NUEVO: Barra de Progreso con Colores (Semáforo) ---
     @Depends("montoLimite, transacciones.monto")
-    public String getBarraProgreso() {
+    @Stereotype("HTML_TEXT") // Renderiza HTML puro
+    public String getEstadoPresupuesto() {
+        // Evitamos división por cero
         if (montoLimite == null || montoLimite.compareTo(BigDecimal.ZERO) == 0) return "";
 
-        BigDecimal total = getGastoTotal();
-        // Calcular porcentaje: (Gasto / Limite) * 100
-        BigDecimal porcentaje = total.divide(montoLimite, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        BigDecimal gasto = getGastoTotal();
+        // Porcentaje = (Gasto / Limite) * 100
+        BigDecimal porcentaje = gasto.divide(montoLimite, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
 
         // Lógica de colores
-        String colorClass = "bg-success"; // Verde por defecto
+        String color = "#28a745"; // Verde (Bootstrap 'success') por defecto
         if (porcentaje.compareTo(new BigDecimal(100)) >= 0) {
-            colorClass = "bg-danger"; // Rojo si se pasa o llega al 100%
-        } else if (porcentaje.compareTo(new BigDecimal(80)) >= 0) {
-            colorClass = "bg-warning"; // Amarillo si pasa del 80%
+            color = "#dc3545"; // Rojo (Bootstrap 'danger') si te pasaste
+        } else if (porcentaje.compareTo(new BigDecimal(75)) >= 0) {
+            color = "#ffc107"; // Amarillo (Bootstrap 'warning') si estás al 75% o más
         }
 
-        // Limitar visualmente al 100% para que no rompa el diseño
-        BigDecimal ancho = porcentaje.min(new BigDecimal(100));
+        // Limitamos el ancho visual al 100% para que no se salga del div
+        double anchoVisual = Math.min(porcentaje.doubleValue(), 100.0);
 
-        // HTML usando clases de Bootstrap (incluido en OpenXava)
-        return "<div class='progress' style='height: 20px; background-color: #e9ecef; border-radius: 5px;'>" +
-                "<div class='progress-bar " + colorClass + "' role='progressbar' " +
-                "style='width: " + ancho + "%; transition: width 0.6s ease;' " +
-                "aria-valuenow='" + ancho + "' aria-valuemin='0' aria-valuemax='100'>" +
-                porcentaje + "%</div></div>";
+        // Construimos el HTML de la barra
+        return "<div style='width: 100%; background-color: #e9ecef; border-radius: 4px; margin-top: 5px;'>" +
+                "  <div style='width: " + anchoVisual + "%; background-color: " + color + "; height: 20px; border-radius: 4px; text-align: center; color: white; line-height: 20px; font-size: 12px; font-weight: bold; transition: width 0.5s;'>" +
+                porcentaje.intValue() + "%" +
+                "  </div>" +
+                "</div>";
     }
 }
