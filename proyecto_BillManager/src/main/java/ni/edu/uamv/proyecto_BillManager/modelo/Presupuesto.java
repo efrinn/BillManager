@@ -3,18 +3,18 @@ package ni.edu.uamv.proyecto_BillManager.modelo;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Month;
+import java.util.Collection;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
-import javax.ws.rs.DefaultValue;
-
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 import org.openxava.calculators.*;
 
 @Entity
 @Getter @Setter
-@View(members="nombre, periodo, anio; montoLimite, notas")
+@View(members="nombre, periodo, anio; montoLimite, gastoTotal; estadoPresupuesto; notas; transacciones")
 public class Presupuesto {
 
     @Id @Hidden
@@ -32,7 +32,7 @@ public class Presupuesto {
     private Month periodo;
 
     @Column(name = "year_presupuesto", length = 4)
-    @Required(message = "El presupuesto debe contener el año en que se obtuvó")
+    @Required(message = "El presupuesto debe contener el año en que se obtuvo")
     @DefaultValueCalculator(CurrentYearCalculator.class)
     private int anio;
 
@@ -45,4 +45,56 @@ public class Presupuesto {
     @Column(name = "notas_presupuesto", length = 100)
     @Stereotype("MEMO")
     private String notas;
+
+    // --- NUEVO: Lista de gastos asociados ---
+    @OneToMany(mappedBy="presupuesto")
+    @ListProperties("fechaTransaccion, nombre, monto")
+    @ReadOnly // Solo lectura aquí, se agregan desde el módulo de Transacciones
+    private Collection<Transaccion> transacciones;
+
+    // --- NUEVO: Cálculo del total gastado ---
+    @Stereotype("MONEY")
+    @Depends("transacciones.monto")
+    public BigDecimal getGastoTotal() {
+        BigDecimal total = BigDecimal.ZERO;
+        if (transacciones != null) {
+            for (Transaccion t : transacciones) {
+                // Solo sumamos si la transacción tiene monto
+                if (t.getMonto() != null) {
+                    total = total.add(t.getMonto());
+                }
+            }
+        }
+        return total;
+    }
+
+    // --- NUEVO: Barra de Progreso con Colores (Semáforo) ---
+    @Depends("montoLimite, transacciones.monto")
+    @Stereotype("HTML_TEXT") // Renderiza HTML puro
+    public String getEstadoPresupuesto() {
+        // Evitamos división por cero
+        if (montoLimite == null || montoLimite.compareTo(BigDecimal.ZERO) == 0) return "";
+
+        BigDecimal gasto = getGastoTotal();
+        // Porcentaje = (Gasto / Limite) * 100
+        BigDecimal porcentaje = gasto.divide(montoLimite, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+
+        // Lógica de colores
+        String color = "#28a745"; // Verde (Bootstrap 'success') por defecto
+        if (porcentaje.compareTo(new BigDecimal(100)) >= 0) {
+            color = "#dc3545"; // Rojo (Bootstrap 'danger') si te pasaste
+        } else if (porcentaje.compareTo(new BigDecimal(75)) >= 0) {
+            color = "#ffc107"; // Amarillo (Bootstrap 'warning') si estás al 75% o más
+        }
+
+        // Limitamos el ancho visual al 100% para que no se salga del div
+        double anchoVisual = Math.min(porcentaje.doubleValue(), 100.0);
+
+        // Construimos el HTML de la barra
+        return "<div style='width: 100%; background-color: #e9ecef; border-radius: 4px; margin-top: 5px;'>" +
+                "  <div style='width: " + anchoVisual + "%; background-color: " + color + "; height: 20px; border-radius: 4px; text-align: center; color: white; line-height: 20px; font-size: 12px; font-weight: bold; transition: width 0.5s;'>" +
+                porcentaje.intValue() + "%" +
+                "  </div>" +
+                "</div>";
+    }
 }
