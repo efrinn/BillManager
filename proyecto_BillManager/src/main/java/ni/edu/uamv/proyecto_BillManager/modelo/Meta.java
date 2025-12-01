@@ -5,22 +5,20 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Collection; // Importante
 import javax.persistence.*;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Min;
-
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 
 @Entity
 @Getter @Setter
-@Tab(
-        properties="nombre, montoObjetivo, montoAcumulado, progreso, fechaLimite, estado",
-        defaultOrder="fechaLimite asc"
-)
+// Actualizamos la vista para incluir la lista de transacciones (ahorros)
 @View(members=
         "Datos { foto; nombre; montoObjetivo; montoAcumulado; progreso } " +
-                "Plazos { fechaLimite; estado }"
+                "Plazos { fechaLimite; estado } " +
+                "Aportes { transacciones }"
 )
 public class Meta {
 
@@ -40,35 +38,52 @@ public class Meta {
     @Column(name = "nombre_meta", length=60, nullable=false)
     private String nombre;
 
-    @Required(message = "La meta tiene que tener un monto objetivo")
+    @Required
     @Column(name = "montoObjetivo_meta", nullable=false)
     @Stereotype("MONEY")
-    @Min(value = 0, message = "No se puede poner un monto negativo")
+    @Min(value = 0)
     private BigDecimal montoObjetivo;
 
-    @Column(name = "montoAcumulado_meta", nullable = false)
-    @Stereotype("MONEY")
-    @Min(value = 0, message = "No se puede poner un monto negativo")
-    private BigDecimal montoAcumulado;
+    // RELACIÓN: Transacciones que aportan a esta meta
+    @OneToMany(mappedBy="meta")
+    @ListProperties("fechaTransaccion, nombre, monto")
+    private Collection<Transaccion> transacciones;
 
+    // CÁLCULO: Eliminamos el campo persistente y lo hacemos calculado
+    @Stereotype("MONEY")
+    @Depends("transacciones.monto")
+    public BigDecimal getMontoAcumulado() {
+        BigDecimal total = BigDecimal.ZERO;
+        if (transacciones != null) {
+            for (Transaccion t : transacciones) {
+                if (t.getMonto() != null) {
+                    total = total.add(t.getMonto());
+                }
+            }
+        }
+        return total;
+    }
+
+    // BARRA DE PROGRESO (Estilo estándar azul)
     @Stereotype("PROGRESS_BAR")
-    @Depends("montoAcumulado, montoObjetivo")
+    @Depends("montoObjetivo, transacciones.monto") // Depende ahora de las transacciones
     public BigDecimal getProgreso() {
+        BigDecimal acumulado = getMontoAcumulado();
+
         if (montoObjetivo == null || montoObjetivo.compareTo(BigDecimal.ZERO) == 0) return BigDecimal.ZERO;
 
-        BigDecimal progreso = montoAcumulado.divide(montoObjetivo, 2, RoundingMode.HALF_UP)
+        BigDecimal progreso = acumulado.divide(montoObjetivo, 2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal("100"));
 
-        // Evitamos que la barra se salga de 100% visualmente
         return progreso.min(new BigDecimal("100"));
     }
 
-    @Required(message = "Es obligatorio que la meta tenga una fecha límite")
+    @Required
     @Column(name = "fechaLimite_meta", nullable = false)
     @FutureOrPresent
     private LocalDate fechaLimite;
 
-    @Required(message = "La meta debe tener un estado en específico")
+    @Required
     @Enumerated(EnumType.STRING)
     private Estado estado;
 }

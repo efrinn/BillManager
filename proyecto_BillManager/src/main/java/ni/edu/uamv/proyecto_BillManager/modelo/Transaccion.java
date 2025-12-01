@@ -17,7 +17,7 @@ import org.openxava.calculators.*;
         defaultOrder="fechaTransaccion desc"
 )
 @View(members=
-        "Principal { fechaTransaccion; nombre; monto; presupuesto } " +
+        "Principal { fechaTransaccion; nombre; monto; presupuesto; meta } " +
                 "Detalles { descripcion; comprobante }"
 )
 public class Transaccion {
@@ -30,6 +30,10 @@ public class Transaccion {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "id_presupuesto", nullable = false)
     private Presupuesto presupuesto;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "id_meta", nullable = false)
+    private Meta meta;
 
     @Required(message = "La transaccion debe llevar nombre")
     @Column(name = "nombre_transaccion", length=60, nullable=false)

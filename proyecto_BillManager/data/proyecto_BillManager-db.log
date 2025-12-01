@@ -1,13 +1,26 @@
-/*C3*/SET SCHEMA PUBLIC
-DISCONNECT
 /*C4*/SET SCHEMA PUBLIC
-DELETE FROM TRANSACCION WHERE OID='6d28c43d-050a-42d3-9bc1-88a393b02b36'
-DELETE FROM TRANSACCION WHERE OID='22725550-1bc1-4619-97f6-42cbb6c54af1'
-DELETE FROM TRANSACCION WHERE OID='df1cd27b-ed7f-4f71-a587-b1f9b6a24be5'
+DISCONNECT
+/*C5*/SET SCHEMA PUBLIC
+drop table if exists IMAGES CASCADE 
+drop table if exists Meta CASCADE 
+drop table if exists OXDISCUSSIONCOMMENTS CASCADE 
+drop table if exists Presupuesto CASCADE 
+drop table if exists Transaccion CASCADE 
+create table IMAGES (ID varchar(32) not null, GALLERY varchar(32), image varbinary(16777216), primary key (ID))
+create table Meta (oid varchar(255) not null, estado varchar(255), fechaLimite_meta date not null, foto blob(255), montoObjetivo_meta numeric(19,2) not null check (montoObjetivo_meta>=0), nombre_meta varchar(60) not null, primary key (oid))
+create table OXDISCUSSIONCOMMENTS (id varchar(32) not null, comment clob(16777216), discussionId varchar(32), time timestamp, userName varchar(30), primary key (id))
+create table Presupuesto (oid varchar(255) not null, year_presupuesto integer, monto_limite numeric(19,2) not null check (monto_limite>=0), nombre_presupuesto varchar(80) not null, notas_presupuesto varchar(100), periodo_presupuesto varchar(15), primary key (oid))
+create table Transaccion (oid varchar(255) not null, comprobante_transaccion varchar(32), desc_transaccion varchar(250), fecha_transaccion date not null, monto_transaccion numeric(19,2) not null check (monto_transaccion>=0), nombre_transaccion varchar(60) not null, id_meta varchar(255) not null, id_presupuesto varchar(255) not null, primary key (oid))
+create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
+alter table Transaccion add constraint FKnnpjhlnfhavs6w3s1srqyak2c foreign key (id_meta) references Meta
+alter table Transaccion add constraint FKsoevmwsgl2wpul5erh87higg6 foreign key (id_presupuesto) references Presupuesto
+INSERT INTO PRESUPUESTO VALUES('05f60e4d-fa86-4020-82c4-f18a56ea9f7f',2025,2500.00,'sdadsadas','sdadasweqwqe','DECEMBER')
 COMMIT
-DELETE FROM META WHERE OID='c9e698a7-e565-4c13-a759-fac6ccb4e3e7'
+INSERT INTO META VALUES('cdfe7de8-17b4-4f60-9a7f-317b26225d4c','PROGRESANDO','2025-12-24',NULL,7884512.00,'cas')
 COMMIT
-DELETE FROM PRESUPUESTO WHERE OID='24f573e1-952d-46a2-9c34-d3d031700f58'
-DELETE FROM PRESUPUESTO WHERE OID='45bbed14-64e8-48c1-8320-dd8210d3efbd'
-DELETE FROM PRESUPUESTO WHERE OID='f9bdae92-b2c2-4666-a1c8-2adff08db026'
+INSERT INTO TRANSACCION VALUES('d14e9e7f-6f11-4f9d-beae-f0dd67d8e526',NULL,'','2025-12-02',555.00,'wwwwww','cdfe7de8-17b4-4f60-9a7f-317b26225d4c','05f60e4d-fa86-4020-82c4-f18a56ea9f7f')
+COMMIT
+INSERT INTO TRANSACCION VALUES('bba9cff5-ee42-4004-a3eb-f853f238297e',NULL,NULL,'2025-12-18',11.00,'asdsasadsad','cdfe7de8-17b4-4f60-9a7f-317b26225d4c','05f60e4d-fa86-4020-82c4-f18a56ea9f7f')
+COMMIT
+INSERT INTO TRANSACCION VALUES('9e9a736a-a8ba-4c84-90c8-c4a1c9252f90',NULL,'','2025-12-03',1000.00,'fieferjifgyei','cdfe7de8-17b4-4f60-9a7f-317b26225d4c','05f60e4d-fa86-4020-82c4-f18a56ea9f7f')
 COMMIT
