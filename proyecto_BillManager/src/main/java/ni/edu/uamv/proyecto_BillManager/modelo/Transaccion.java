@@ -46,9 +46,9 @@ public class Transaccion {
     private BigDecimal monto;
 
     @Column(name = "fecha_transaccion", nullable = false)
-    @Required(message = "Es obligatorio que la transaccion tenga la fecha en que se realizó")
-    @DefaultValueCalculator(CurrentDateCalculator.class)
-    private LocalDate fechaTransaccion;
+    @Required(message = "Es obligatorio que la transaccion tenga la fecha...")
+
+    private LocalDate fechaTransaccion = LocalDate.now();
 
     // MEJORA: FILE permite subir PDF, Imágenes, Excel, etc.
     // Guarda un ID (String), no el binario pesado en la tabla principal.

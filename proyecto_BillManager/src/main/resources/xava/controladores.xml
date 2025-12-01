@@ -16,9 +16,16 @@
     <!-- Controlador:
     <controlador nombre="Profesor">
         <hereda-de controlador="Typical"/>
-        <accion nombre="new" icono="library-plus" atajo-de-teclado="Control N" 
-                clase="acciones.CrearProfesor"/>        
+        <accion nombre="new" icono="library-plus" atajo-de-teclado="Control N"
+                clase="acciones.CrearProfesor"/>
     </controlador>
     -->
+    <controlador nombre="Transaccion">
+        <hereda-de controlador="Typical"/>
+
+        <accion nombre="imprimirComprobante"
+                clase="ni.edu.uamv.proyecto_BillManager.acciones.ImprimirTransaccionAction"
+                icono="printer"
+                modo="detail"/> </controlador>
     
 </controladores>
