@@ -4,67 +4,197 @@
               xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
               name="TransaccionReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 
-    <field name="nombre" class="java.lang.String"/>
-    <field name="monto" class="java.math.BigDecimal"/>
-    <field name="fechaTransaccion" class="java.time.LocalDate"/>
-    <field name="descripcion" class="java.lang.String"/>
+    <parameter name="tipo" class="java.lang.String"/>
+    <parameter name="origen" class="java.lang.String"/>
+    <parameter name="descripcion" class="java.lang.String"/>
+    <parameter name="fechaImpresion" class="java.util.Date"/>
+    <parameter name="numeroHoja" class="java.lang.String"/>
+    <parameter name="cuenta" class="java.lang.String"/>
+    <parameter name="fechaTransaccion" class="java.util.Date"/>
+    <parameter name="monto" class="java.math.BigDecimal"/>
+
+    <parameter name="colActual" class="java.math.BigDecimal"/>
+    <parameter name="lblActual" class="java.lang.String"/>
+    <parameter name="colMeta" class="java.math.BigDecimal"/>
+    <parameter name="lblMeta" class="java.lang.String"/>
+    <parameter name="colDiferencia" class="java.math.BigDecimal"/>
+    <parameter name="lblDiferencia" class="java.lang.String"/>
 
     <title>
-        <band height="80">
+        <band height="90">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="80" backcolor="#E6E6E6"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
             <staticText>
-                <reportElement x="0" y="20" width="555" height="30"/>
-                <textElement textAlignment="Center">
-                    <font size="22" isBold="true"/>
-                </textElement>
+                <reportElement x="20" y="10" width="350" height="30" forecolor="#333333"/>
+                <textElement><font size="22" isBold="true"/></textElement>
                 <text><![CDATA[Comprobante de Transacción]]></text>
             </staticText>
-            <line>
-                <reportElement x="0" y="60" width="555" height="1"/>
-            </line>
+            <textField textAdjust="ScaleFont">
+                <reportElement x="380" y="10" width="160" height="30" forecolor="#006699"/>
+                <textElement textAlignment="Right"><font size="18" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$P{tipo}]]></textFieldExpression>
+            </textField>
+            <textField pattern="dd/MM/yyyy HH:mm">
+                <reportElement x="20" y="50" width="200" height="20"/>
+                <textElement verticalAlignment="Middle"><font size="9" isItalic="true"/></textElement>
+                <textFieldExpression><![CDATA["Impreso: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format($P{fechaImpresion})]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="380" y="50" width="60" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"><font isBold="true"/></textElement>
+                <text><![CDATA[Ref:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="445" y="50" width="95" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$P{numeroHoja}]]></textFieldExpression>
+            </textField>
         </band>
     </title>
 
     <detail>
-        <band height="200">
+        <band height="400">
+            <rectangle>
+                <reportElement x="0" y="10" width="555" height="380"/>
+                <graphicElement><pen lineWidth="1.0" lineColor="#CCCCCC"/></graphicElement>
+            </rectangle>
+
             <staticText>
-                <reportElement x="20" y="20" width="100" height="20"/>
-                <textElement><font isBold="true"/></textElement>
-                <text><![CDATA[Nombre:]]></text>
+                <reportElement x="20" y="30" width="120" height="20" forecolor="#006699"/>
+                <textElement verticalAlignment="Middle"><font size="12" isBold="true"/></textElement>
+                <text><![CDATA[Fecha Operación:]]></text>
             </staticText>
-            <textField>
-                <reportElement x="130" y="20" width="300" height="20"/>
-                <textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+            <textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+                <reportElement x="150" y="30" width="380" height="20"/>
+                <textElement verticalAlignment="Middle"><font size="12"/></textElement>
+                <textFieldExpression><![CDATA[$P{fechaTransaccion}]]></textFieldExpression>
             </textField>
 
             <staticText>
-                <reportElement x="20" y="50" width="100" height="20"/>
-                <textElement><font isBold="true"/></textElement>
-                <text><![CDATA[Monto:]]></text>
+                <reportElement x="20" y="60" width="120" height="20" forecolor="#006699"/>
+                <textElement verticalAlignment="Middle"><font size="12" isBold="true"/></textElement>
+                <text><![CDATA[Cuenta:]]></text>
             </staticText>
-            <textField pattern="¤#,##0.00">
-                <reportElement x="130" y="50" width="300" height="20"/>
-                <textFieldExpression><![CDATA[$F{monto}]]></textFieldExpression>
+            <textField isBlankWhenNull="true">
+                <reportElement x="150" y="60" width="380" height="20"/>
+                <textElement verticalAlignment="Middle"><font size="12"/></textElement>
+                <textFieldExpression><![CDATA[$P{cuenta}]]></textFieldExpression>
             </textField>
 
             <staticText>
-                <reportElement x="20" y="80" width="100" height="20"/>
-                <textElement><font isBold="true"/></textElement>
-                <text><![CDATA[Fecha:]]></text>
+                <reportElement x="20" y="90" width="120" height="20" forecolor="#006699"/>
+                <textElement verticalAlignment="Middle"><font size="12" isBold="true"/></textElement>
+                <text><![CDATA[Clasificación:]]></text>
             </staticText>
-            <textField>
-                <reportElement x="130" y="80" width="300" height="20"/>
-                <textFieldExpression><![CDATA[$F{fechaTransaccion}]]></textFieldExpression>
+            <textField isBlankWhenNull="true">
+                <reportElement x="150" y="90" width="380" height="20"/>
+                <textElement verticalAlignment="Middle"><font size="12"/></textElement>
+                <textFieldExpression><![CDATA[$P{origen}]]></textFieldExpression>
             </textField>
 
+            <line>
+                <reportElement x="20" y="125" width="515" height="1" forecolor="#CCCCCC"/>
+            </line>
+
             <staticText>
-                <reportElement x="20" y="110" width="100" height="20"/>
-                <textElement><font isBold="true"/></textElement>
-                <text><![CDATA[Descripción:]]></text>
+                <reportElement x="20" y="140" width="120" height="30" forecolor="#006699"/>
+                <textElement verticalAlignment="Middle"><font size="14" isBold="true"/></textElement>
+                <text><![CDATA[MONTO:]]></text>
             </staticText>
-            <textField textAdjust="StretchHeight">
-                <reportElement x="130" y="110" width="400" height="60"/>
-                <textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+            <textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+                <reportElement x="150" y="140" width="200" height="30"/>
+                <textElement verticalAlignment="Middle"><font size="16" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$P{monto}]]></textFieldExpression>
+            </textField>
+
+            <frame>
+                <reportElement x="20" y="185" width="515" height="65" isRemoveLineWhenBlank="true">
+                    <printWhenExpression><![CDATA[$P{colMeta} != null]]></printWhenExpression>
+                </reportElement>
+                <box>
+                    <pen lineWidth="0.5" lineColor="#999999"/>
+                    <topPen lineWidth="0.5" lineStyle="Solid" lineColor="#999999"/>
+                    <leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#999999"/>
+                    <bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#999999"/>
+                    <rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#999999"/>
+                </box>
+                <rectangle>
+                    <reportElement x="0" y="0" width="515" height="20" backcolor="#F0F0F0"/>
+                    <graphicElement><pen lineWidth="0.0"/></graphicElement>
+                </rectangle>
+                <staticText>
+                    <reportElement x="5" y="0" width="250" height="20" forecolor="#333333"/>
+                    <textElement verticalAlignment="Middle"><font size="10" isBold="true"/></textElement>
+                    <text><![CDATA[Estado Actual (Balance)]]></text>
+                </staticText>
+
+                <textField>
+                    <reportElement x="10" y="25" width="130" height="15" forecolor="#666666"/>
+                    <textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement>
+                    <textFieldExpression><![CDATA[$P{lblActual}]]></textFieldExpression>
+                </textField>
+                <textField pattern="¤ #,##0.00">
+                    <reportElement x="10" y="40" width="130" height="20"/>
+                    <textElement verticalAlignment="Middle"><font size="11"/></textElement>
+                    <textFieldExpression><![CDATA[$P{colActual}]]></textFieldExpression>
+                </textField>
+
+                <line>
+                    <reportElement x="160" y="25" width="1" height="35" forecolor="#CCCCCC"/>
+                </line>
+
+                <textField>
+                    <reportElement x="180" y="25" width="130" height="15" forecolor="#666666"/>
+                    <textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement>
+                    <textFieldExpression><![CDATA[$P{lblMeta}]]></textFieldExpression>
+                </textField>
+                <textField pattern="¤ #,##0.00">
+                    <reportElement x="180" y="40" width="130" height="20"/>
+                    <textElement verticalAlignment="Middle"><font size="11"/></textElement>
+                    <textFieldExpression><![CDATA[$P{colMeta}]]></textFieldExpression>
+                </textField>
+
+                <line>
+                    <reportElement x="330" y="25" width="1" height="35" forecolor="#CCCCCC"/>
+                </line>
+
+                <textField>
+                    <reportElement x="350" y="25" width="150" height="15" forecolor="#009933"/>
+                    <textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement>
+                    <textFieldExpression><![CDATA[$P{lblDiferencia}]]></textFieldExpression>
+                </textField>
+                <textField pattern="¤ #,##0.00">
+                    <reportElement x="350" y="40" width="150" height="20" forecolor="#009933"/>
+                    <textElement verticalAlignment="Middle"><font size="12" isBold="true"/></textElement>
+                    <textFieldExpression><![CDATA[$P{colDiferencia}]]></textFieldExpression>
+                </textField>
+            </frame>
+
+            <staticText>
+                <reportElement x="20" y="270" width="120" height="20" forecolor="#006699"/>
+                <textElement><font size="12" isBold="true"/></textElement>
+                <text><![CDATA[Detalle:]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement x="20" y="295" width="515" height="60"/>
+                <box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+                    <pen lineWidth="0.5" lineStyle="Dashed" lineColor="#999999"/>
+                </box>
+                <textElement><font size="11"/></textElement>
+                <textFieldExpression><![CDATA[$P{descripcion}]]></textFieldExpression>
             </textField>
         </band>
     </detail>
+
+    <pageFooter>
+        <band height="40">
+            <textField>
+                <reportElement x="0" y="10" width="555" height="20" forecolor="#999999"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["BillManager"]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
 </jasperReport>

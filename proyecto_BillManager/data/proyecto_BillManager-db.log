@@ -14,9 +14,13 @@ create table Transaccion (oid varchar(255) not null, comprobante_transaccion var
 create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
 alter table Transaccion add constraint FKnnpjhlnfhavs6w3s1srqyak2c foreign key (id_meta) references Meta
 alter table Transaccion add constraint FKsoevmwsgl2wpul5erh87higg6 foreign key (id_presupuesto) references Presupuesto
-INSERT INTO META VALUES('2c04301e-1334-4f56-b072-9e58a741fd36','PROGRESANDO','2025-12-24',NULL,454848.00,'fufo')
+INSERT INTO META VALUES('8bf9af0a-deca-4d45-9e6b-38a491af0352','PROGRESANDO','2025-12-17',NULL,20000.00,'Camaro')
 COMMIT
-INSERT INTO PRESUPUESTO VALUES('473bc2a5-c159-474c-bbdd-34aae8c510c7',2025,111201.00,'bruh','','JANUARY')
+INSERT INTO TRANSACCION VALUES('aef4440f-31ac-4882-b4ab-cbb7dda611ec',NULL,NULL,'2025-12-01',10000.00,'abono 1 ','8bf9af0a-deca-4d45-9e6b-38a491af0352',NULL)
 COMMIT
-INSERT INTO TRANSACCION VALUES('3510ed4e-0327-40e8-ba50-9ea11fcd8c8f',NULL,NULL,'2025-12-01',5555.00,'clase normal','2c04301e-1334-4f56-b072-9e58a741fd36',NULL)
+INSERT INTO TRANSACCION VALUES('e4757a0c-8003-432c-9106-a4d138c6a5a4',NULL,NULL,'2025-12-31',5000.00,'Abono2','8bf9af0a-deca-4d45-9e6b-38a491af0352',NULL)
+COMMIT
+INSERT INTO TRANSACCION VALUES('d84fdfc5-b951-4eea-b00f-48f558824c5c',NULL,NULL,'2025-12-04',6000.00,'Abono 3','8bf9af0a-deca-4d45-9e6b-38a491af0352',NULL)
+COMMIT
+INSERT INTO TRANSACCION VALUES('cd5a0697-0363-423f-af30-7653ab3630e5',NULL,NULL,'2025-12-07',2000.00,'Abono 4','8bf9af0a-deca-4d45-9e6b-38a491af0352',NULL)
 COMMIT

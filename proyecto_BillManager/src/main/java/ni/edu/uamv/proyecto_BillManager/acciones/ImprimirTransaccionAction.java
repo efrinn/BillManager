@@ -1,54 +1,129 @@
 package ni.edu.uamv.proyecto_BillManager.acciones;
 
 import java.util.*;
+import java.math.BigDecimal;
 import org.openxava.actions.*;
 import org.openxava.model.*;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.*;
-import ni.edu.uamv.proyecto_BillManager.modelo.Transaccion;
+import ni.edu.uamv.proyecto_BillManager.modelo.*;
 
 public class ImprimirTransaccionAction extends JasperReportBaseAction {
 
-    // 1. Decimos de dónde salen los DATOS (Este es el método que te faltaba)
+    private Transaccion transaccion;
+
     @Override
-    protected JRDataSource getDataSource() throws Exception {
-        // Obtenemos el mapa de claves (IDs)
-        Map key = getView().getKeyValues();
-
-        // --- CORRECCIÓN IMPORTANTE ---
-        // Verificamos específicamente si el valor de "oid" es nulo
+    public void execute() throws Exception {
+        Map key = (Map) getView().getKeyValues();
         if (key == null || key.get("oid") == null) {
-            // Esto muestra un mensaje rojo bonito en la pantalla en lugar del error técnico
-            addError("¡Alto ahí! Primero debes GUARDAR la transacción antes de imprimirla.");
-            return new JREmptyDataSource(); // Retorna vacío para no romper el programa
+            addError("Primero guarda la transacción.");
+            return;
         }
-        // -----------------------------
-
-        // Buscamos la entidad usando el mapa de claves
-        Transaccion t = (Transaccion) MapFacade.findEntity("Transaccion", key);
-
-        // Validación extra por si se borró mientras la veías
-        if (t == null) {
-            addError("No se encontró la transacción en la base de datos.");
-            return new JREmptyDataSource();
+        this.transaccion = (Transaccion) MapFacade.findEntity("Transaccion", key);
+        if (this.transaccion == null) {
+            addError("No se encontró la transacción.");
+            return;
         }
-
-        List<Transaccion> datos = new ArrayList<>();
-        datos.add(t);
-
-        return new JRBeanCollectionDataSource(datos);
+        super.execute();
     }
 
-    // 2. Decimos cuál es el ARCHIVO de de la lista
+    @Override
+    protected JRDataSource getDataSource() throws Exception {
+        return new JRBeanArrayDataSource(new Object[] { transaccion });
+    }
+
     @Override
     protected String getJRXML() throws Exception {
         return "reports/TransaccionReport.jrxml";
     }
 
-    // 3. Parámetros extra (obligatorio declararlo)
-    //para este caso no usamos ninguno así que devolvemos null
     @Override
     protected Map getParameters() throws Exception {
-        return null;
+        Map<String, Object> parameters = new HashMap<>();
+
+
+        String desc = (transaccion.getDescripcion() != null) ? transaccion.getDescripcion() : "Sin descripción";
+        parameters.put("descripcion", desc);
+        parameters.put("fechaTransaccion", (transaccion.getFechaTransaccion() != null) ? java.sql.Date.valueOf(transaccion.getFechaTransaccion()) : new Date());
+        parameters.put("fechaImpresion", new Date());
+        parameters.put("cuenta", "Cuenta Principal");
+        parameters.put("numeroHoja", "1");
+        parameters.put("monto", transaccion.getMonto());
+
+        // --- LÓGICA DE 3 COLUMNAS: ACTUAL | META | DIFERENCIA ---
+        String tipo = "TRANSACCIÓN";
+        String origen = "General";
+
+
+        BigDecimal colActual = null;     //  Cuanto llevo
+        String lblActual = "";
+
+        BigDecimal colMeta = null;       // Cual es el tope
+        String lblMeta = "";
+
+        BigDecimal colDiferencia = null; //  Cuanto falta/sobra
+        String lblDiferencia = "";
+
+        if (transaccion.getPresupuesto() != null) {
+            // --- LOGICA PRESUPUESTO ---
+            tipo = "GASTO";
+            origen = "Presupuesto: " + transaccion.getPresupuesto().getNombre();
+
+            BigDecimal limite = transaccion.getPresupuesto().getMontoLimite();
+            BigDecimal gastado = transaccion.getPresupuesto().getGastoTotal();
+
+            //  Actual
+            colActual = gastado;
+            lblActual = "Total Gastado:";
+
+            //  Meta (Límite)
+            colMeta = limite;
+            lblMeta = "Límite Mensual:";
+
+            // Diferencia Disponible Límite  Gastado
+            colDiferencia = limite.subtract(gastado);
+            lblDiferencia = "Saldo Disponible:";
+
+        } else if (transaccion.getMeta() != null) {
+
+            tipo = "AHORRO / META";
+            origen = "Meta: " + transaccion.getMeta().getNombre();
+
+            BigDecimal objetivo = transaccion.getMeta().getMontoObjetivo();
+            BigDecimal acumulado = transaccion.getMeta().getMontoAcumulado();
+
+            // Actual
+            colActual = acumulado;
+            lblActual = "Total Ahorrado:";
+
+            //  Meta (Objetivo)
+            colMeta = objetivo;
+            lblMeta = "Objetivo Meta:";
+
+
+            colDiferencia = objetivo.subtract(acumulado);
+
+            // Si ya cumplió la meta
+            if (colDiferencia.compareTo(BigDecimal.ZERO) <= 0) {
+                lblDiferencia = "¡Meta Cumplida! (Sobra):";
+                colDiferencia = colDiferencia.abs(); // Mostramos positivo cuanto sobra
+            } else {
+                lblDiferencia = "Falta para Meta:";
+            }
+        }
+
+        parameters.put("tipo", tipo);
+        parameters.put("origen", origen);
+
+        parameters.put("colActual", colActual);
+        parameters.put("lblActual", lblActual);
+
+        parameters.put("colMeta", colMeta);
+        parameters.put("lblMeta", lblMeta);
+
+        parameters.put("colDiferencia", colDiferencia);
+        parameters.put("lblDiferencia", lblDiferencia);
+
+        return parameters;
     }
 }
