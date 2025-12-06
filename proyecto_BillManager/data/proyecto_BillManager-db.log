@@ -1,6 +1,6 @@
-/*C4*/SET SCHEMA PUBLIC
+/*C2*/SET SCHEMA PUBLIC
 DISCONNECT
-/*C5*/SET SCHEMA PUBLIC
+/*C3*/SET SCHEMA PUBLIC
 drop table if exists IMAGES CASCADE 
 drop table if exists Meta CASCADE 
 drop table if exists OXDISCUSSIONCOMMENTS CASCADE 
@@ -10,17 +10,8 @@ create table IMAGES (ID varchar(32) not null, GALLERY varchar(32), image varbina
 create table Meta (oid varchar(255) not null, estado varchar(255), fechaLimite_meta date not null, foto blob(255), montoObjetivo_meta numeric(19,2) not null check (montoObjetivo_meta>=0), nombre_meta varchar(60) not null, primary key (oid))
 create table OXDISCUSSIONCOMMENTS (id varchar(32) not null, comment clob(16777216), discussionId varchar(32), time timestamp, userName varchar(30), primary key (id))
 create table Presupuesto (oid varchar(255) not null, year_presupuesto integer, monto_limite numeric(19,2) not null check (monto_limite>=0), nombre_presupuesto varchar(80) not null, notas_presupuesto varchar(100), periodo_presupuesto varchar(15), primary key (oid))
-create table Transaccion (oid varchar(255) not null, comprobante_transaccion varchar(32), desc_transaccion varchar(250), fecha_transaccion date not null, monto_transaccion numeric(19,2) not null check (monto_transaccion>=0), nombre_transaccion varchar(60) not null, id_meta varchar(255), id_presupuesto varchar(255), primary key (oid))
+create table Transaccion (oid varchar(255) not null, comprobante_transaccion varchar(32), desc_transaccion varchar(250), fecha_transaccion date, monto_transaccion numeric(19,2) not null check (monto_transaccion>=0), nombre_transaccion varchar(60) not null, id_meta varchar(255), id_presupuesto varchar(255), primary key (oid))
 create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
 alter table Transaccion add constraint FKnnpjhlnfhavs6w3s1srqyak2c foreign key (id_meta) references Meta
 alter table Transaccion add constraint FKsoevmwsgl2wpul5erh87higg6 foreign key (id_presupuesto) references Presupuesto
-INSERT INTO META VALUES('8bf9af0a-deca-4d45-9e6b-38a491af0352','PROGRESANDO','2025-12-17',NULL,20000.00,'Camaro')
-COMMIT
-INSERT INTO TRANSACCION VALUES('aef4440f-31ac-4882-b4ab-cbb7dda611ec',NULL,NULL,'2025-12-01',10000.00,'abono 1 ','8bf9af0a-deca-4d45-9e6b-38a491af0352',NULL)
-COMMIT
-INSERT INTO TRANSACCION VALUES('e4757a0c-8003-432c-9106-a4d138c6a5a4',NULL,NULL,'2025-12-31',5000.00,'Abono2','8bf9af0a-deca-4d45-9e6b-38a491af0352',NULL)
-COMMIT
-INSERT INTO TRANSACCION VALUES('d84fdfc5-b951-4eea-b00f-48f558824c5c',NULL,NULL,'2025-12-04',6000.00,'Abono 3','8bf9af0a-deca-4d45-9e6b-38a491af0352',NULL)
-COMMIT
-INSERT INTO TRANSACCION VALUES('cd5a0697-0363-423f-af30-7653ab3630e5',NULL,NULL,'2025-12-07',2000.00,'Abono 4','8bf9af0a-deca-4d45-9e6b-38a491af0352',NULL)
-COMMIT
+DISCONNECT

@@ -50,8 +50,12 @@ public class Transaccion {
     @Min(value = 0, message = "EL monto no puede ser negativo")
     private BigDecimal monto;
 
-    @Column(name = "fecha_transaccion", nullable = false)
-    @Required(message = "Es obligatorio que la transaccion tenga la fecha en que se realizó")
+    @Column(name = "fecha_transaccion")
+    @Required
+    // 1. Asigna la fecha del sistema automáticamente al abrir el formulario
+    @DefaultValueCalculator(CurrentLocalDateCalculator.class)
+    // 2. Bloquea el campo para que el usuario no pueda cambiarlo
+    @ReadOnly
     private LocalDate fechaTransaccion;
 
     @Column(name = "comprobante_transaccion", length=32)
