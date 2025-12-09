@@ -12,7 +12,7 @@
                 clase="ni.edu.uamv.proyecto_BillManager.acciones.ImprimirTransaccionAction"/>
     </controlador>
 
-    <controlador nombre="Login">
+    <controlador nombre="SignIn">
         <accion nombre="signIn"
                 clase="ni.edu.uamv.proyecto_BillManager.acciones.SignInAction"
                 atajo-de-teclado="ENTER"/>
