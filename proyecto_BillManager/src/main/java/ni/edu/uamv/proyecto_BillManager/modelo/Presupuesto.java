@@ -11,12 +11,12 @@ import javax.validation.constraints.Min;
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 import org.openxava.calculators.*;
-import org.openxava.util.Users; // [IMPORTANTE]
+import org.openxava.util.Users;
 
 @Entity
 @Getter @Setter
 @View(members="nombre, periodo, anio; montoLimite, gastoTotal; estadoPresupuesto; notas; transacciones")
-@Tab(baseCondition = "${usuario} = ?") // [FILTRO] Solo muestra presupuestos del usuario logueado
+// [MODIFICADO] Se eliminó el @Tab con baseCondition para visibilidad total
 public class Presupuesto {
 
     @Id @Hidden
@@ -24,7 +24,6 @@ public class Presupuesto {
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String oid;
 
-    // --- SEGURIDAD: PROPIEDAD DE USUARIO ---
     @Column(length = 50)
     @Hidden
     private String usuario;
@@ -35,7 +34,6 @@ public class Presupuesto {
             usuario = Users.getCurrent();
         }
     }
-    // ---------------------------------------
 
     @Column(name = "nombre_presupuesto", length = 80, nullable = false)
     @Required(message = "El presupuesto debe tener nombre para entender su contexto")

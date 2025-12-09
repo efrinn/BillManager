@@ -4,8 +4,17 @@
 
 <controladores>
 
-    <controlador nombre="Transaccion">
+    <controlador nombre="SeguridadLectura">
         <hereda-de controlador="Typical"/>
+
+        <accion nombre="searchByViewKey"
+                clase="ni.edu.uamv.proyecto_BillManager.acciones.BloquearAjenoAction"
+                atajo-de-teclado="F8"
+                icono="magnify"/>
+    </controlador>
+
+    <controlador nombre="Transaccion">
+        <hereda-de controlador="SeguridadLectura"/>
         <accion nombre="imprimirReporte"
                 icono="printer"
                 modo="detail"

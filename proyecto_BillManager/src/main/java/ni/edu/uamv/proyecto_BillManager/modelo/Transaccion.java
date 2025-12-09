@@ -1,4 +1,5 @@
 package ni.edu.uamv.proyecto_BillManager.modelo;
+
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
@@ -8,14 +9,14 @@ import javax.validation.constraints.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 import org.openxava.calculators.*;
-import org.openxava.util.Users; // [IMPORTANTE]
+import org.openxava.util.Users;
 
 @Entity
 @Getter @Setter
 @Tab(
         properties="fechaTransaccion, nombre, monto",
-        defaultOrder="fechaTransaccion desc",
-        baseCondition = "${usuario} = ?" // [FILTRO] Solo muestra transacciones del usuario logueado
+        defaultOrder="fechaTransaccion desc"
+        // [MODIFICADO] Se eliminó baseCondition para permitir ver transacciones de otros
 )
 @View(members=
         "Principal { fechaTransaccion; nombre; monto; presupuesto; meta } " +
@@ -28,7 +29,6 @@ public class Transaccion {
     @GenericGenerator(name="system-uuid", strategy="uuid2")
     private String oid;
 
-    // --- SEGURIDAD: PROPIEDAD DE USUARIO ---
     @Column(length = 50)
     @Hidden
     private String usuario;
@@ -39,7 +39,6 @@ public class Transaccion {
             usuario = Users.getCurrent();
         }
     }
-    // ---------------------------------------
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "id_presupuesto", nullable = true)

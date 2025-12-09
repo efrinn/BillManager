@@ -4,16 +4,23 @@
 
 <aplicacion nombre="proyecto_BillManager">
 
-    <!-- Controlador por defecto para TODOS los módulos generados automáticamente -->
     <modulo-defecto>
         <controlador nombre="Typical"/>
     </modulo-defecto>
 
-    <!-- Aquí podrías añadir luego un Dashboard, por ejemplo:
-    <modulo nombre="DashboardFinanzas">
-        <modelo nombre="FinanzasDashboard"/>
-        <controlador nombre="Typical"/>
+    <modulo nombre="Presupuesto">
+        <modelo nombre="Presupuesto"/>
+        <controlador nombre="SeguridadLectura"/>
     </modulo>
-    -->
+
+    <modulo nombre="Meta">
+        <modelo nombre="Meta"/>
+        <controlador nombre="SeguridadLectura"/>
+    </modulo>
+
+    <modulo nombre="Transaccion">
+        <modelo nombre="Transaccion"/>
+        <controlador nombre="Transaccion"/>
+    </modulo>
 
 </aplicacion>
