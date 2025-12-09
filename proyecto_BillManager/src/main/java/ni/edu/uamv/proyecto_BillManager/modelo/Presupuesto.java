@@ -11,16 +11,31 @@ import javax.validation.constraints.Min;
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 import org.openxava.calculators.*;
+import org.openxava.util.Users; // [IMPORTANTE]
 
 @Entity
 @Getter @Setter
 @View(members="nombre, periodo, anio; montoLimite, gastoTotal; estadoPresupuesto; notas; transacciones")
+@Tab(baseCondition = "${usuario} = ?") // [FILTRO] Solo muestra presupuestos del usuario logueado
 public class Presupuesto {
 
     @Id @Hidden
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String oid;
+
+    // --- SEGURIDAD: PROPIEDAD DE USUARIO ---
+    @Column(length = 50)
+    @Hidden
+    private String usuario;
+
+    @PrePersist
+    public void onPrePersist() {
+        if (usuario == null) {
+            usuario = Users.getCurrent();
+        }
+    }
+    // ---------------------------------------
 
     @Column(name = "nombre_presupuesto", length = 80, nullable = false)
     @Required(message = "El presupuesto debe tener nombre para entender su contexto")
@@ -46,20 +61,17 @@ public class Presupuesto {
     @Stereotype("MEMO")
     private String notas;
 
-    // --- NUEVO: Lista de gastos asociados ---
     @OneToMany(mappedBy="presupuesto")
     @ListProperties("fechaTransaccion, nombre, monto")
-    @ReadOnly // Solo lectura aquí, se agregan desde el módulo de Transacciones
+    @ReadOnly
     private Collection<Transaccion> transacciones;
 
-    // --- NUEVO: Cálculo del total gastado ---
     @Stereotype("MONEY")
     @Depends("transacciones.monto")
     public BigDecimal getGastoTotal() {
         BigDecimal total = BigDecimal.ZERO;
         if (transacciones != null) {
             for (Transaccion t : transacciones) {
-                // Solo sumamos si la transacción tiene monto
                 if (t.getMonto() != null) {
                     total = total.add(t.getMonto());
                 }
@@ -68,29 +80,23 @@ public class Presupuesto {
         return total;
     }
 
-    // --- NUEVO: Barra de Progreso con Colores (Semáforo) ---
     @Depends("montoLimite, transacciones.monto")
-    @Stereotype("HTML_TEXT") // Renderiza HTML puro
+    @Stereotype("HTML_TEXT")
     public String getEstadoPresupuesto() {
-        // Evitamos división por cero
         if (montoLimite == null || montoLimite.compareTo(BigDecimal.ZERO) == 0) return "";
 
         BigDecimal gasto = getGastoTotal();
-        // Porcentaje = (Gasto / Limite) * 100
         BigDecimal porcentaje = gasto.divide(montoLimite, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
 
-        // Lógica de colores
-        String color = "#28a745"; // Verde (Bootstrap 'success') por defecto
+        String color = "#28a745";
         if (porcentaje.compareTo(new BigDecimal(100)) >= 0) {
-            color = "#dc3545"; // Rojo (Bootstrap 'danger') si te pasaste
+            color = "#dc3545";
         } else if (porcentaje.compareTo(new BigDecimal(75)) >= 0) {
-            color = "#ffc107"; // Amarillo (Bootstrap 'warning') si estás al 75% o más
+            color = "#ffc107";
         }
 
-        // Limitamos el ancho visual al 100% para que no se salga del div
         double anchoVisual = Math.min(porcentaje.doubleValue(), 100.0);
 
-        // Construimos el HTML de la barra
         return "<div style='width: 100%; background-color: #e9ecef; border-radius: 4px; margin-top: 5px;'>" +
                 "  <div style='width: " + anchoVisual + "%; background-color: " + color + "; height: 20px; border-radius: 4px; text-align: center; color: white; line-height: 20px; font-size: 12px; font-weight: bold; transition: width 0.5s;'>" +
                 porcentaje.intValue() + "%" +

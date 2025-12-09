@@ -1,17 +1,25 @@
-/*C2*/SET SCHEMA PUBLIC
+/*C5*/SET SCHEMA PUBLIC
 DISCONNECT
-/*C3*/SET SCHEMA PUBLIC
+/*C6*/SET SCHEMA PUBLIC
 drop table if exists IMAGES CASCADE 
 drop table if exists Meta CASCADE 
+SET SCHEMA SYSTEM_LOBS
+DELETE FROM LOB_IDS WHERE LOB_ID=1
+INSERT INTO LOB_IDS VALUES(1,10317,0,30)
+COMMIT
+SET SCHEMA PUBLIC
 drop table if exists OXDISCUSSIONCOMMENTS CASCADE 
 drop table if exists Presupuesto CASCADE 
 drop table if exists Transaccion CASCADE 
+drop table if exists Usuario CASCADE 
 create table IMAGES (ID varchar(32) not null, GALLERY varchar(32), image varbinary(16777216), primary key (ID))
-create table Meta (oid varchar(255) not null, estado varchar(255), fechaLimite_meta date not null, foto blob(255), montoObjetivo_meta numeric(19,2) not null check (montoObjetivo_meta>=0), nombre_meta varchar(60) not null, primary key (oid))
+create table Meta (oid varchar(255) not null, estado varchar(255), fechaLimite_meta date not null, foto blob(255), montoObjetivo_meta numeric(19,2) not null check (montoObjetivo_meta>=0), nombre_meta varchar(60) not null, usuario varchar(50), primary key (oid))
 create table OXDISCUSSIONCOMMENTS (id varchar(32) not null, comment clob(16777216), discussionId varchar(32), time timestamp, userName varchar(30), primary key (id))
-create table Presupuesto (oid varchar(255) not null, year_presupuesto integer, monto_limite numeric(19,2) not null check (monto_limite>=0), nombre_presupuesto varchar(80) not null, notas_presupuesto varchar(100), periodo_presupuesto varchar(15), primary key (oid))
-create table Transaccion (oid varchar(255) not null, comprobante_transaccion varchar(32), desc_transaccion varchar(250), fecha_transaccion date, monto_transaccion numeric(19,2) not null check (monto_transaccion>=0), nombre_transaccion varchar(60) not null, id_meta varchar(255), id_presupuesto varchar(255), primary key (oid))
+create table Presupuesto (oid varchar(255) not null, year_presupuesto integer, monto_limite numeric(19,2) not null check (monto_limite>=0), nombre_presupuesto varchar(80) not null, notas_presupuesto varchar(100), periodo_presupuesto varchar(15), usuario varchar(50), primary key (oid))
+create table Transaccion (oid varchar(255) not null, comprobante_transaccion varchar(32), desc_transaccion varchar(250), fecha_transaccion date, monto_transaccion numeric(19,2) not null check (monto_transaccion>=0), nombre_transaccion varchar(60) not null, usuario varchar(50), id_meta varchar(255), id_presupuesto varchar(255), primary key (oid))
+create table Usuario (user_name varchar(30) not null, apellido varchar(60), contrasena varchar(20), foto blob(255), nombre varchar(60), primary key (user_name))
 create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
 alter table Transaccion add constraint FKnnpjhlnfhavs6w3s1srqyak2c foreign key (id_meta) references Meta
 alter table Transaccion add constraint FKsoevmwsgl2wpul5erh87higg6 foreign key (id_presupuesto) references Presupuesto
-DISCONNECT
+INSERT INTO USUARIO VALUES('jorge24','cubillo','cubillos24',NULL,'jorge')
+COMMIT

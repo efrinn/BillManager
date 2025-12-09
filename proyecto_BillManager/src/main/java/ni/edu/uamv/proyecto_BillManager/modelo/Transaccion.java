@@ -4,16 +4,18 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.*;
-import javax.validation.constraints.*; // Importante para @AssertTrue
+import javax.validation.constraints.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
 import org.openxava.calculators.*;
+import org.openxava.util.Users; // [IMPORTANTE]
 
 @Entity
 @Getter @Setter
 @Tab(
         properties="fechaTransaccion, nombre, monto",
-        defaultOrder="fechaTransaccion desc"
+        defaultOrder="fechaTransaccion desc",
+        baseCondition = "${usuario} = ?" // [FILTRO] Solo muestra transacciones del usuario logueado
 )
 @View(members=
         "Principal { fechaTransaccion; nombre; monto; presupuesto; meta } " +
@@ -26,12 +28,23 @@ public class Transaccion {
     @GenericGenerator(name="system-uuid", strategy="uuid2")
     private String oid;
 
-    // CAMBIO 1: nullable = true para permitir que esté vacío si es una transacción de Meta
+    // --- SEGURIDAD: PROPIEDAD DE USUARIO ---
+    @Column(length = 50)
+    @Hidden
+    private String usuario;
+
+    @PrePersist
+    public void onPrePersist() {
+        if (usuario == null) {
+            usuario = Users.getCurrent();
+        }
+    }
+    // ---------------------------------------
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "id_presupuesto", nullable = true)
     private Presupuesto presupuesto;
 
-    // CAMBIO 2: nullable = true para permitir que esté vacío si es una transacción de Presupuesto
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "id_meta", nullable = true)
     private Meta meta;
@@ -52,9 +65,7 @@ public class Transaccion {
 
     @Column(name = "fecha_transaccion")
     @Required
-    // 1. Asigna la fecha del sistema automáticamente al abrir el formulario
     @DefaultValueCalculator(CurrentLocalDateCalculator.class)
-    // 2. Bloquea el campo para que el usuario no pueda cambiarlo
     @ReadOnly
     private LocalDate fechaTransaccion;
 
@@ -62,11 +73,8 @@ public class Transaccion {
     @Stereotype("FILE")
     private String comprobante;
 
-    // CAMBIO 3: Validación de exclusividad (XOR)
-    // Esto asegura que el usuario elija uno, pero no los dos al mismo tiempo.
     @AssertTrue(message = "La transacción debe pertenecer a un Presupuesto O a una Meta, pero no a ambos a la vez.")
     private boolean isDestinoUnico() {
-        // Retorna true solo si: (Tengo Presupuesto Y NO Meta) O (NO tengo Presupuesto Y tengo Meta)
         return (presupuesto != null && meta == null) ||
                 (presupuesto == null && meta != null);
     }

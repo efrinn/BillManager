@@ -11,17 +11,19 @@ import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Min;
 import org.hibernate.annotations.GenericGenerator;
 import org.openxava.annotations.*;
+import org.openxava.util.Users; // [IMPORTANTE] Necesario para obtener el usuario actual
 
 @Entity
 @Getter @Setter
 @Tab(
         properties="nombre, montoObjetivo, montoAcumulado, progreso, fechaLimite, estado",
-        defaultOrder="fechaLimite asc"
+        defaultOrder="fechaLimite asc",
+        baseCondition = "${usuario} = ?" // [FILTRO] Solo muestra metas del usuario logueado
 )
 @View(members=
         "Datos { foto; nombre; montoObjetivo; montoAcumulado; progreso } " +
                 "Plazos { fechaLimite; estado } " +
-                "Ahorros { transacciones }" // Mostramos el detalle de los ingresos
+                "Ahorros { transacciones }"
 )
 public class Meta {
 
@@ -31,6 +33,20 @@ public class Meta {
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy="uuid2")
     private String oid;
+
+    // --- SEGURIDAD: PROPIEDAD DE USUARIO ---
+    @Column(length = 50)
+    @Hidden // El usuario no necesita ver esto, es interno
+    private String usuario;
+
+    @PrePersist
+    public void onPrePersist() {
+        // Antes de guardar, asignamos el usuario logueado
+        if (usuario == null) {
+            usuario = Users.getCurrent();
+        }
+    }
+    // ---------------------------------------
 
     @Lob
     @Basic(fetch=FetchType.LAZY)
@@ -47,13 +63,11 @@ public class Meta {
     @Min(value = 0, message = "No se puede poner un monto negativo")
     private BigDecimal montoObjetivo;
 
-    // --- NUEVO: Lista de transacciones (ahorros) ---
     @OneToMany(mappedBy="meta")
     @ListProperties("fechaTransaccion, nombre, monto")
     @ReadOnly
     private Collection<Transaccion> transacciones;
 
-    // --- MODIFICADO: Ya no es @Column, es calculado ---
     @Stereotype("MONEY")
     @Depends("transacciones.monto")
     public BigDecimal getMontoAcumulado() {
@@ -68,9 +82,8 @@ public class Meta {
         return total;
     }
 
-    // --- BARRA AZUL ESTÁNDAR (Se llena con los ahorros) ---
     @Stereotype("PROGRESS_BAR")
-    @Depends("montoObjetivo, transacciones.monto") // Depende de los ahorros
+    @Depends("montoObjetivo, transacciones.monto")
     public BigDecimal getProgreso() {
         BigDecimal acumulado = getMontoAcumulado();
 
@@ -79,7 +92,6 @@ public class Meta {
         BigDecimal progreso = acumulado.divide(montoObjetivo, 2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal("100"));
 
-        // Limitamos a 100% visualmente
         return progreso.min(new BigDecimal("100"));
     }
 
