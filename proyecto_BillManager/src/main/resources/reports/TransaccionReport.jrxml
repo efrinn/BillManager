@@ -13,6 +13,10 @@
     <parameter name="fechaTransaccion" class="java.util.Date"/>
     <parameter name="monto" class="java.math.BigDecimal"/>
 
+    <parameter name="categoria" class="java.lang.String"/>
+    <parameter name="metodoPago" class="java.lang.String"/>
+    <parameter name="estado" class="java.lang.String"/>
+
     <parameter name="colActual" class="java.math.BigDecimal"/>
     <parameter name="lblActual" class="java.lang.String"/>
     <parameter name="colMeta" class="java.math.BigDecimal"/>
@@ -55,9 +59,9 @@
     </title>
 
     <detail>
-        <band height="400">
+        <band height="450">
             <rectangle>
-                <reportElement x="0" y="10" width="555" height="380"/>
+                <reportElement x="0" y="10" width="555" height="430"/>
                 <graphicElement><pen lineWidth="1.0" lineColor="#CCCCCC"/></graphicElement>
             </rectangle>
 
@@ -86,7 +90,7 @@
             <staticText>
                 <reportElement x="20" y="90" width="120" height="20" forecolor="#006699"/>
                 <textElement verticalAlignment="Middle"><font size="12" isBold="true"/></textElement>
-                <text><![CDATA[Clasificación:]]></text>
+                <text><![CDATA[Contexto:]]></text>
             </staticText>
             <textField isBlankWhenNull="true">
                 <reportElement x="150" y="90" width="380" height="20"/>
@@ -94,23 +98,45 @@
                 <textFieldExpression><![CDATA[$P{origen}]]></textFieldExpression>
             </textField>
 
+            <staticText>
+                <reportElement x="20" y="120" width="120" height="20" forecolor="#006699"/>
+                <textElement verticalAlignment="Middle"><font size="12" isBold="true"/></textElement>
+                <text><![CDATA[Categoría:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement x="150" y="120" width="380" height="20"/>
+                <textElement verticalAlignment="Middle"><font size="12"/></textElement>
+                <textFieldExpression><![CDATA[$P{categoria}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="20" y="150" width="120" height="20" forecolor="#006699"/>
+                <textElement verticalAlignment="Middle"><font size="12" isBold="true"/></textElement>
+                <text><![CDATA[Pago y Estado:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement x="150" y="150" width="380" height="20"/>
+                <textElement verticalAlignment="Middle"><font size="12"/></textElement>
+                <textFieldExpression><![CDATA[$P{metodoPago} + "  [" + $P{estado} + "]"]]></textFieldExpression>
+            </textField>
+
             <line>
-                <reportElement x="20" y="125" width="515" height="1" forecolor="#CCCCCC"/>
+                <reportElement x="20" y="185" width="515" height="1" forecolor="#CCCCCC"/>
             </line>
 
             <staticText>
-                <reportElement x="20" y="140" width="120" height="30" forecolor="#006699"/>
+                <reportElement x="20" y="200" width="120" height="30" forecolor="#006699"/>
                 <textElement verticalAlignment="Middle"><font size="14" isBold="true"/></textElement>
                 <text><![CDATA[MONTO:]]></text>
             </staticText>
             <textField pattern="¤ #,##0.00" isBlankWhenNull="true">
-                <reportElement x="150" y="140" width="200" height="30"/>
+                <reportElement x="150" y="200" width="200" height="30"/>
                 <textElement verticalAlignment="Middle"><font size="16" isBold="true"/></textElement>
                 <textFieldExpression><![CDATA[$P{monto}]]></textFieldExpression>
             </textField>
 
             <frame>
-                <reportElement x="20" y="185" width="515" height="65" isRemoveLineWhenBlank="true">
+                <reportElement x="20" y="245" width="515" height="65" isRemoveLineWhenBlank="true">
                     <printWhenExpression><![CDATA[$P{colMeta} != null]]></printWhenExpression>
                 </reportElement>
                 <box>
@@ -173,12 +199,12 @@
             </frame>
 
             <staticText>
-                <reportElement x="20" y="270" width="120" height="20" forecolor="#006699"/>
+                <reportElement x="20" y="330" width="120" height="20" forecolor="#006699"/>
                 <textElement><font size="12" isBold="true"/></textElement>
                 <text><![CDATA[Detalle:]]></text>
             </staticText>
             <textField textAdjust="StretchHeight" isBlankWhenNull="true">
-                <reportElement x="20" y="295" width="515" height="60"/>
+                <reportElement x="20" y="355" width="515" height="60"/>
                 <box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
                     <pen lineWidth="0.5" lineStyle="Dashed" lineColor="#999999"/>
                 </box>
@@ -193,7 +219,7 @@
             <textField>
                 <reportElement x="0" y="10" width="555" height="20" forecolor="#999999"/>
                 <textElement textAlignment="Center"/>
-                <textFieldExpression><![CDATA["BillManager"]]></textFieldExpression>
+                <textFieldExpression><![CDATA["BillManager - Sistema de Gestión de Gastos"]]></textFieldExpression>
             </textField>
         </band>
     </pageFooter>

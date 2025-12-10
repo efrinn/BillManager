@@ -2,6 +2,7 @@ package ni.edu.uamv.proyecto_BillManager.acciones;
 
 import java.util.*;
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter; // Necesario para fechas si usas LocalDate
 import org.openxava.actions.*;
 import org.openxava.model.*;
 import net.sf.jasperreports.engine.*;
@@ -41,27 +42,57 @@ public class ImprimirTransaccionAction extends JasperReportBaseAction {
     protected Map getParameters() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
 
-
+        // Datos básicos
         String desc = (transaccion.getDescripcion() != null) ? transaccion.getDescripcion() : "Sin descripción";
         parameters.put("descripcion", desc);
-        parameters.put("fechaTransaccion", (transaccion.getFechaTransaccion() != null) ? java.sql.Date.valueOf(transaccion.getFechaTransaccion()) : new Date());
+
+        // Conversión segura de LocalDate a Date para JasperReports
+        Date fechaTx = (transaccion.getFechaTransaccion() != null)
+                ? java.sql.Date.valueOf(transaccion.getFechaTransaccion())
+                : new Date();
+        parameters.put("fechaTransaccion", fechaTx);
+
         parameters.put("fechaImpresion", new Date());
-        parameters.put("cuenta", "Cuenta Principal");
+        parameters.put("cuenta", "Usuario: " + transaccion.getUsuario()); // Mostramos el usuario
         parameters.put("numeroHoja", "1");
         parameters.put("monto", transaccion.getMonto());
 
+        // --- NUEVOS CAMPOS ---
+        // 1. Categoría
+        String catNombre = "General";
+        if (transaccion.getCategoria() != null) {
+            catNombre = transaccion.getCategoria().getNombre();
+        }
+        parameters.put("categoria", catNombre);
+
+        // 2. Método de Pago
+        String metodo = "No especificado";
+        if (transaccion.getTipoPago() != null) {
+            metodo = transaccion.getTipoPago().toString();
+        }
+        parameters.put("metodoPago", metodo);
+
+        // 3. Estado (Pagado / Pendiente / Vencido)
+        String estado = "PENDIENTE";
+        if (transaccion.isPagado()) {
+            estado = "PAGADO";
+        } else if (transaccion.isVencida()) {
+            estado = "VENCIDO";
+        }
+        parameters.put("estado", estado);
+
+
         // --- LÓGICA DE 3 COLUMNAS: ACTUAL | META | DIFERENCIA ---
         String tipo = "TRANSACCIÓN";
-        String origen = "General";
+        String origen = "Movimiento Suelto"; // Valor por defecto
 
-
-        BigDecimal colActual = null;     //  Cuanto llevo
+        BigDecimal colActual = null;
         String lblActual = "";
 
-        BigDecimal colMeta = null;       // Cual es el tope
+        BigDecimal colMeta = null;
         String lblMeta = "";
 
-        BigDecimal colDiferencia = null; //  Cuanto falta/sobra
+        BigDecimal colDiferencia = null;
         String lblDiferencia = "";
 
         if (transaccion.getPresupuesto() != null) {
@@ -72,41 +103,34 @@ public class ImprimirTransaccionAction extends JasperReportBaseAction {
             BigDecimal limite = transaccion.getPresupuesto().getMontoLimite();
             BigDecimal gastado = transaccion.getPresupuesto().getGastoTotal();
 
-            //  Actual
             colActual = gastado;
             lblActual = "Total Gastado:";
 
-            //  Meta (Límite)
             colMeta = limite;
             lblMeta = "Límite Mensual:";
 
-            // Diferencia Disponible Límite  Gastado
             colDiferencia = limite.subtract(gastado);
             lblDiferencia = "Saldo Disponible:";
 
         } else if (transaccion.getMeta() != null) {
-
+            // --- LOGICA META ---
             tipo = "AHORRO / META";
             origen = "Meta: " + transaccion.getMeta().getNombre();
 
             BigDecimal objetivo = transaccion.getMeta().getMontoObjetivo();
             BigDecimal acumulado = transaccion.getMeta().getMontoAcumulado();
 
-            // Actual
             colActual = acumulado;
             lblActual = "Total Ahorrado:";
 
-            //  Meta (Objetivo)
             colMeta = objetivo;
             lblMeta = "Objetivo Meta:";
 
-
             colDiferencia = objetivo.subtract(acumulado);
 
-            // Si ya cumplió la meta
             if (colDiferencia.compareTo(BigDecimal.ZERO) <= 0) {
                 lblDiferencia = "¡Meta Cumplida! (Sobra):";
-                colDiferencia = colDiferencia.abs(); // Mostramos positivo cuanto sobra
+                colDiferencia = colDiferencia.abs();
             } else {
                 lblDiferencia = "Falta para Meta:";
             }
