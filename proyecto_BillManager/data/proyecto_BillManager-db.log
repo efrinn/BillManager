@@ -1,46 +1,25 @@
-/*C5*/SET SCHEMA PUBLIC
+/*C4*/SET SCHEMA PUBLIC
 DISCONNECT
-/*C6*/SET SCHEMA PUBLIC
+/*C5*/SET SCHEMA PUBLIC
 drop table if exists Categoria CASCADE 
 drop table if exists IMAGES CASCADE 
 drop table if exists Meta CASCADE 
-SET SCHEMA SYSTEM_LOBS
-DELETE FROM LOB_IDS WHERE LOB_ID=1
-INSERT INTO LOB_IDS VALUES(1,48875,0,30)
-COMMIT
-SET SCHEMA PUBLIC
 drop table if exists OXDISCUSSIONCOMMENTS CASCADE 
 drop table if exists Presupuesto CASCADE 
 drop table if exists Transaccion CASCADE 
-drop table if exists Usuario CASCADE 
 create table Categoria (oid varchar(255) not null, icono varchar(30), nombre varchar(50), primary key (oid))
 create table IMAGES (ID varchar(32) not null, GALLERY varchar(32), image varbinary(16777216), primary key (ID))
 create table Meta (oid varchar(255) not null, estado varchar(255), fechaLimite_meta date not null, foto blob(255), montoObjetivo_meta numeric(19,2) not null check (montoObjetivo_meta>=0), nombre_meta varchar(60) not null, usuario varchar(50), primary key (oid))
 create table OXDISCUSSIONCOMMENTS (id varchar(32) not null, comment clob(16777216), discussionId varchar(32), time timestamp, userName varchar(30), primary key (id))
 create table Presupuesto (oid varchar(255) not null, year_presupuesto integer, monto_limite numeric(19,2) not null check (monto_limite>=0), nombre_presupuesto varchar(80) not null, notas_presupuesto varchar(100), periodo_presupuesto varchar(15), usuario varchar(50), primary key (oid))
 create table Transaccion (oid varchar(255) not null, comprobante_transaccion varchar(32), desc_transaccion varchar(250), fecha_transaccion date, fecha_vencimiento date, monto_transaccion numeric(19,2) not null check (monto_transaccion>=0), nombre_transaccion varchar(60) not null, esta_pagado boolean, tipoPago varchar(20), usuario varchar(50), categoria_oid varchar(255), id_meta varchar(255), id_presupuesto varchar(255), primary key (oid))
-create table Usuario (user_name varchar(30) not null, apellido varchar(60), contrasena varchar(20), foto blob(255), nombre varchar(60), primary key (user_name))
 create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
 alter table Transaccion add constraint FK66077a50lwsjhfff1p8noofdi foreign key (categoria_oid) references Categoria
 alter table Transaccion add constraint FKnnpjhlnfhavs6w3s1srqyak2c foreign key (id_meta) references Meta
 alter table Transaccion add constraint FKsoevmwsgl2wpul5erh87higg6 foreign key (id_presupuesto) references Presupuesto
-/*C1*/SET SCHEMA SYSTEM_LOBS
-INSERT INTO LOB_IDS VALUES(2,48875,0,30)
-ALTER SEQUENCE SYSTEM_LOBS.LOB_ID RESTART WITH 3
+INSERT INTO PRESUPUESTO VALUES('1e875342-aeec-4e79-a38c-0ff74dc89fdd',2025,5000.00,'Geordanny','','JANUARY','admin')
 COMMIT
-DELETE FROM BLOCKS WHERE BLOCK_ADDR=2
-INSERT INTO BLOCKS VALUES(2,2,0)
-INSERT INTO BLOCKS VALUES(4,2147483643,0)
-DELETE FROM BLOCKS WHERE BLOCK_ADDR=2
-INSERT INTO LOBS VALUES(2,2,0,2)
+INSERT INTO CATEGORIA VALUES('023e4b62-b4fa-4596-a3a2-f4a7d1950545','','s')
 COMMIT
-/*C6*/INSERT INTO META VALUES('932386fe-6b66-44eb-bf1d-4034c545fc6d','PROGRESANDO','2025-12-10',2,100000000000000.00,'camaro','admin')
-SET SCHEMA SYSTEM_LOBS
-DELETE FROM LOB_IDS WHERE LOB_ID=2
-INSERT INTO LOB_IDS VALUES(2,48875,1,30)
-COMMIT
-SET SCHEMA PUBLIC
-INSERT INTO CATEGORIA VALUES('963cde62-9296-4c2c-a670-c0e7d0efa918','abugida-devanagari','auto')
-COMMIT
-INSERT INTO TRANSACCION VALUES('4e9624e2-8e72-4ec6-871e-44139b237032',NULL,'asadasadad','2025-12-09','2025-12-10',1212.00,'Abono numero 1 para  mi camaro',TRUE,'EFECTIVO','admin','963cde62-9296-4c2c-a670-c0e7d0efa918','932386fe-6b66-44eb-bf1d-4034c545fc6d',NULL)
+INSERT INTO TRANSACCION VALUES('522bba84-6f09-45d3-948c-4f87d2fac8e3',NULL,NULL,'2025-12-09','2025-12-09',11.00,'sda',FALSE,'EFECTIVO','admin','023e4b62-b4fa-4596-a3a2-f4a7d1950545',NULL,'1e875342-aeec-4e79-a38c-0ff74dc89fdd')
 COMMIT

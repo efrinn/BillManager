@@ -19,9 +19,7 @@ import org.openxava.util.Users;
 @Entity
 @Getter @Setter
 @Tab(
-        // [¡CRÍTICO CORREGIDO!] El 'oid' (la llave primaria) debe ir primero para que el Tab funcione.
-        // Aunque tiene @Hidden, debe estar en la lista.
-        properties="oid, nombre, fechaTransaccion, monto, pagado, vencida, tipoPago, categoria.nombre",
+        properties="nombre, fechaTransaccion, monto, pagado, vencida, tipoPago, categoria.nombre",
         defaultOrder="fechaTransaccion desc"
 )
 @View(members=
@@ -91,7 +89,6 @@ public class Transaccion implements IVencible {
 
     @Column(name = "monto_transaccion", nullable = false)
     @Required(message = "La transacción debe tener un monto")
-    @Stereotype("MONEY")
     @Min(value = 0, message = "El monto no puede ser negativo")
     private BigDecimal monto;
 
@@ -104,9 +101,11 @@ public class Transaccion implements IVencible {
     // --- Gestión de Pagos y Vencimientos ---
 
     @Column(name = "esta_pagado")
+    @Required
     private boolean pagado;
 
     @Column(name = "fecha_vencimiento")
+    @Required
     private LocalDate fechaVencimiento;
 
     @Depends("pagado, fechaVencimiento")
@@ -118,16 +117,10 @@ public class Transaccion implements IVencible {
     @Stereotype("FILE")
     private String comprobante;
 
-    @AssertTrue(message = "La transacción debe pertenecer a un Presupuesto O a una Meta, pero no a ambos a la vez.")
+    @AssertTrue(message = "La transacción debe pertenecer a un Presupuesto o a una Meta, pero no a ambos a la vez.")
     private boolean isDestinoUnico() {
         return (presupuesto != null && meta == null) ||
                 (presupuesto == null && meta != null) ||
                 (presupuesto == null && meta == null);
-    }
-
-    // [CRÍTICO] Método toString para evitar el error "Imposible convertir Monto..."
-    @Override
-    public String toString() {
-        return nombre != null ? nombre : "Transacción " + oid;
     }
 }
