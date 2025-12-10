@@ -9,17 +9,17 @@ drop table if exists Presupuesto CASCADE
 drop table if exists Transaccion CASCADE 
 create table Categoria (oid varchar(255) not null, icono varchar(30), nombre varchar(50), primary key (oid))
 create table IMAGES (ID varchar(32) not null, GALLERY varchar(32), image varbinary(16777216), primary key (ID))
-create table Meta (oid varchar(255) not null, estado varchar(255), fechaLimite_meta date not null, foto blob(255), montoObjetivo_meta numeric(19,2) not null check (montoObjetivo_meta>=0), nombre_meta varchar(60) not null, usuario varchar(50), primary key (oid))
+create table Meta (oid varchar(255) not null, estado varchar(255), fechaLimite_meta date not null, foto blob(255), montoObjetivo_meta numeric(19,2) not null check (montoObjetivo_meta>=0), nombre_meta varchar(60) not null, primary key (oid))
 create table OXDISCUSSIONCOMMENTS (id varchar(32) not null, comment clob(16777216), discussionId varchar(32), time timestamp, userName varchar(30), primary key (id))
-create table Presupuesto (oid varchar(255) not null, year_presupuesto integer, monto_limite numeric(19,2) not null check (monto_limite>=0), nombre_presupuesto varchar(80) not null, notas_presupuesto varchar(100), periodo_presupuesto varchar(15), usuario varchar(50), primary key (oid))
-create table Transaccion (oid varchar(255) not null, comprobante_transaccion varchar(32), desc_transaccion varchar(250), fecha_transaccion date, fecha_vencimiento date, monto_transaccion numeric(19,2) not null check (monto_transaccion>=0), nombre_transaccion varchar(60) not null, esta_pagado boolean, tipoPago varchar(20), usuario varchar(50), categoria_oid varchar(255), id_meta varchar(255), id_presupuesto varchar(255), primary key (oid))
+create table Presupuesto (oid varchar(255) not null, year_presupuesto integer, monto_limite numeric(19,2) not null check (monto_limite>=0), nombre_presupuesto varchar(80) not null, notas_presupuesto varchar(100), periodo_presupuesto varchar(15), primary key (oid))
+create table Transaccion (oid varchar(255) not null, comprobante_transaccion varchar(32), desc_transaccion varchar(250), fecha_transaccion date, fecha_vencimiento date, monto_transaccion numeric(19,2) not null check (monto_transaccion>=0), nombre_transaccion varchar(60) not null, esta_pagado boolean, tipoPago varchar(20), categoria_oid varchar(255), id_meta varchar(255), id_presupuesto varchar(255), primary key (oid))
 create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
 alter table Transaccion add constraint FK66077a50lwsjhfff1p8noofdi foreign key (categoria_oid) references Categoria
 alter table Transaccion add constraint FKnnpjhlnfhavs6w3s1srqyak2c foreign key (id_meta) references Meta
 alter table Transaccion add constraint FKsoevmwsgl2wpul5erh87higg6 foreign key (id_presupuesto) references Presupuesto
-INSERT INTO PRESUPUESTO VALUES('1e875342-aeec-4e79-a38c-0ff74dc89fdd',2025,5000.00,'Geordanny','','JANUARY','admin')
+INSERT INTO META VALUES('9aadc9cd-ae85-40ae-897c-d0596e0b45d1','PROGRESANDO','2025-12-25',NULL,10000.00,'Pastel')
 COMMIT
-INSERT INTO CATEGORIA VALUES('023e4b62-b4fa-4596-a3a2-f4a7d1950545','','s')
+INSERT INTO CATEGORIA VALUES('5a73b938-a671-4680-8e22-b4bb27944ae9','','Amigos')
 COMMIT
-INSERT INTO TRANSACCION VALUES('522bba84-6f09-45d3-948c-4f87d2fac8e3',NULL,NULL,'2025-12-09','2025-12-09',11.00,'sda',FALSE,'EFECTIVO','admin','023e4b62-b4fa-4596-a3a2-f4a7d1950545',NULL,'1e875342-aeec-4e79-a38c-0ff74dc89fdd')
+INSERT INTO TRANSACCION VALUES('091c199b-3672-4942-8bca-48211486cf8c',NULL,NULL,'2025-12-10','2025-12-11',155.00,'Kenneth',TRUE,'EFECTIVO','5a73b938-a671-4680-8e22-b4bb27944ae9','9aadc9cd-ae85-40ae-897c-d0596e0b45d1',NULL)
 COMMIT

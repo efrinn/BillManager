@@ -24,17 +24,6 @@ public class Presupuesto {
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String oid;
 
-    @Column(length = 50)
-    @Hidden
-    private String usuario;
-
-    @PrePersist
-    public void onPrePersist() {
-        if (usuario == null) {
-            usuario = Users.getCurrent();
-        }
-    }
-
     @Column(name = "nombre_presupuesto", length = 80, nullable = false)
     @Required(message = "El presupuesto debe tener nombre para entender su contexto")
     private String nombre;

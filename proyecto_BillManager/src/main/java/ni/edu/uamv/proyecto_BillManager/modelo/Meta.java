@@ -34,17 +34,6 @@ public class Meta {
     @GenericGenerator(name="system-uuid", strategy="uuid2")
     private String oid;
 
-    @Column(length = 50)
-    @Hidden
-    private String usuario;
-
-    @PrePersist
-    public void onPrePersist() {
-        if (usuario == null) {
-            usuario = Users.getCurrent();
-        }
-    }
-
     @Lob
     @Basic(fetch=FetchType.LAZY)
     @Stereotype("PHOTO")

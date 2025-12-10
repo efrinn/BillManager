@@ -18,10 +18,6 @@ import org.openxava.util.Users;
 
 @Entity
 @Getter @Setter
-@Tab(
-        properties="nombre, fechaTransaccion, monto, pagado, vencida, tipoPago, categoria.nombre",
-        defaultOrder="fechaTransaccion desc"
-)
 @View(members=
         "Principal { " +
                 "fechaTransaccion; " +
@@ -51,17 +47,6 @@ public class Transaccion implements IVencible {
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy="uuid2")
     private String oid;
-
-    @Column(length = 50)
-    @Hidden
-    private String usuario;
-
-    @PrePersist
-    public void onPrePersist() {
-        if (usuario == null) {
-            usuario = Users.getCurrent();
-        }
-    }
 
     @ManyToOne(fetch=FetchType.LAZY)
     @DescriptionsList(descriptionProperties = "nombre")

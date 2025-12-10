@@ -53,7 +53,6 @@ public class ImprimirTransaccionAction extends JasperReportBaseAction {
         parameters.put("fechaTransaccion", fechaTx);
 
         parameters.put("fechaImpresion", new Date());
-        parameters.put("cuenta", "Usuario: " + transaccion.getUsuario()); // Mostramos el usuario
         parameters.put("numeroHoja", "1");
         parameters.put("monto", transaccion.getMonto());
 
