@@ -11,6 +11,9 @@
                 atajo-de-teclado="F8"
                 icono="magnify"/>
 
+        <accion nombre="next" oculta="true" hereda="true"/>
+        <accion nombre="previous" oculta="true" hereda="true"/>
+
         <accion nombre="viewDetail"
                 clase="ni.edu.uamv.proyecto_BillManager.acciones.IrADetalleAction"
                 oculta="true"

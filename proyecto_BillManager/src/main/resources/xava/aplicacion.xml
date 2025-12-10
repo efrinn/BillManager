@@ -1,5 +1,4 @@
 <?xml version = "1.0" encoding = "ISO-8859-1"?>
-
 <!DOCTYPE aplicacion SYSTEM "dtds/aplicacion.dtd">
 
 <aplicacion nombre="proyecto_BillManager">
@@ -8,14 +7,14 @@
         <controlador nombre="Typical"/>
     </modulo-defecto>
 
-    <modulo nombre="Presupuesto">
-        <modelo nombre="Presupuesto"/>
-        <controlador nombre="SeguridadLectura"/>
-    </modulo>
-
     <modulo nombre="Meta">
         <modelo nombre="Meta"/>
-        <controlador nombre="SeguridadLectura"/>
+        <controlador nombre="Meta"/>
+    </modulo>
+
+    <modulo nombre="Presupuesto">
+        <modelo nombre="Presupuesto"/>
+        <controlador nombre="Presupuesto"/>
     </modulo>
 
     <modulo nombre="Transaccion">

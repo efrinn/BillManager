@@ -10,36 +10,48 @@ public class BloquearAjenoAction extends SearchByViewKeyAction {
 
     @Override
     public void execute() throws Exception {
-        super.execute(); // Carga los datos
+        // 1. Carga los datos visuales primero
+        super.execute();
 
         try {
+            // 2. Obtiene la entidad real desde la base de datos
             Map key = getView().getKeyValues();
-            Object entity = MapFacade.findEntity(getView().getModelName(), key);
+            String modelo = getView().getModelName();
+            Object entity = MapFacade.findEntity(modelo, key);
 
             if (entity != null) {
+                // 3. Obtiene quién es el dueño y quién está logueado
                 String duenoRegistro = (String) PropertyUtils.getSimpleProperty(entity, "usuario");
                 String usuarioLogueado = Users.getCurrent();
 
-                // Lógica de bloqueo
-                if (duenoRegistro != null && !duenoRegistro.equals(usuarioLogueado)) {
+                // 4. Lógica de Seguridad Estricta
+                // Si el dueño es nulo (registro viejo) O el dueño no soy yo -> BLOQUEAR
+                if (duenoRegistro == null || !duenoRegistro.equals(usuarioLogueado)) {
 
+                    // Deshabilitar edición
                     getView().setEditable(false);
 
-                    // [NUEVO] Quitamos los botones también aquí
+                    // Eliminar botones peligrosos
                     removeActions("CRUD.save", "CRUD.delete", "CRUD.new");
 
-                    addWarning("Modo lectura: Este registro pertenece a " + duenoRegistro);
+                    // Mensaje claro
+                    if (duenoRegistro == null) {
+                        addWarning("Modo lectura: Este registro no tiene propietario asignado (dato antiguo).");
+                    } else {
+                        addWarning("Modo lectura: Este registro pertenece a " + duenoRegistro);
+                    }
 
                 } else {
+                    // 5. Si es mi registro -> PERMITIR
                     getView().setEditable(true);
-                    // Aquí SÍ es buena idea asegurarnos de que los botones estén visibles
-                    // por si venimos de un registro bloqueado sin cambiar de vista
                     addActions("CRUD.save", "CRUD.delete", "CRUD.new");
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            getView().setEditable(true);
+            // Si falla algo, bloqueamos por seguridad
+            getView().setEditable(false);
+            addError("Error verificando permisos de seguridad.");
         }
     }
 }

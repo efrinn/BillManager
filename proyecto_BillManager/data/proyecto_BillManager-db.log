@@ -16,7 +16,9 @@ create table Usuario (user_name varchar(30) not null, apellido varchar(60), cont
 create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
 alter table Transaccion add constraint FKnnpjhlnfhavs6w3s1srqyak2c foreign key (id_meta) references Meta
 alter table Transaccion add constraint FKsoevmwsgl2wpul5erh87higg6 foreign key (id_presupuesto) references Presupuesto
-INSERT INTO USUARIO VALUES('cubillos24','cubillo','1234',NULL,'jorge')
+INSERT INTO USUARIO VALUES('Jorge','cubillo','1234',NULL,'jorge')
 COMMIT
-INSERT INTO META VALUES('47c6ec1f-65c1-4be2-8bb9-ef2d08a41bfe','PROGRESANDO','2025-12-10',NULL,10000.00,'camaro','admin')
+INSERT INTO USUARIO VALUES('isaac','aragon','4321',NULL,'isaac')
+COMMIT
+INSERT INTO META VALUES('839dcf8f-5a2d-4875-b475-a71ee7a343a1','PROGRESANDO','2025-12-19',NULL,1000.00,'casa','isaac')
 COMMIT
