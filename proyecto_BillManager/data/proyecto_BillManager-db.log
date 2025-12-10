@@ -1,13 +1,8 @@
-/*C5*/SET SCHEMA PUBLIC
+/*C4*/SET SCHEMA PUBLIC
 DISCONNECT
-/*C6*/SET SCHEMA PUBLIC
+/*C5*/SET SCHEMA PUBLIC
 drop table if exists IMAGES CASCADE 
 drop table if exists Meta CASCADE 
-SET SCHEMA SYSTEM_LOBS
-DELETE FROM LOB_IDS WHERE LOB_ID=1
-INSERT INTO LOB_IDS VALUES(1,48875,0,30)
-COMMIT
-SET SCHEMA PUBLIC
 drop table if exists OXDISCUSSIONCOMMENTS CASCADE 
 drop table if exists Presupuesto CASCADE 
 drop table if exists Transaccion CASCADE 
@@ -21,11 +16,7 @@ create table Usuario (user_name varchar(30) not null, apellido varchar(60), cont
 create index IDXbhlx4vunn24ym1tbrlgq8g30m on OXDISCUSSIONCOMMENTS (discussionId)
 alter table Transaccion add constraint FKnnpjhlnfhavs6w3s1srqyak2c foreign key (id_meta) references Meta
 alter table Transaccion add constraint FKsoevmwsgl2wpul5erh87higg6 foreign key (id_presupuesto) references Presupuesto
-INSERT INTO META VALUES('9fae02c7-21be-4a5a-9c9a-4fdb4fdca8fc','PROGRESANDO','2025-12-12',NULL,100000.00,'camaro','admin')
-COMMIT
 INSERT INTO USUARIO VALUES('cubillos24','cubillo','1234',NULL,'jorge')
 COMMIT
-INSERT INTO META VALUES('99c10e2f-6ac2-46c5-a68c-9a273b174741','PROGRESANDO','2025-12-11',NULL,32222222.00,'lusi','cubillos24')
-COMMIT
-INSERT INTO TRANSACCION VALUES('afc4e0ee-e907-4d96-91cc-a32b0ddfee4b',NULL,NULL,'2025-12-09',2222.00,'sdasaw','admin','99c10e2f-6ac2-46c5-a68c-9a273b174741',NULL)
+INSERT INTO META VALUES('47c6ec1f-65c1-4be2-8bb9-ef2d08a41bfe','PROGRESANDO','2025-12-10',NULL,10000.00,'camaro','admin')
 COMMIT

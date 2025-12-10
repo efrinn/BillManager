@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
 <!DOCTYPE controladores SYSTEM "dtds/controladores.dtd">
 
 <controladores>
@@ -11,6 +10,19 @@
                 clase="ni.edu.uamv.proyecto_BillManager.acciones.BloquearAjenoAction"
                 atajo-de-teclado="F8"
                 icono="magnify"/>
+
+        <accion nombre="viewDetail"
+                clase="ni.edu.uamv.proyecto_BillManager.acciones.IrADetalleAction"
+                oculta="true"
+                atajo-de-teclado="F4"/>
+    </controlador>
+
+    <controlador nombre="Meta">
+        <hereda-de controlador="SeguridadLectura"/>
+    </controlador>
+
+    <controlador nombre="Presupuesto">
+        <hereda-de controlador="SeguridadLectura"/>
     </controlador>
 
     <controlador nombre="Transaccion">
